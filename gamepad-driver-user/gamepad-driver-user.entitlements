@@ -12,7 +12,10 @@
 	<true/>
 	<key>com.apple.developer.driverkit.transport.usb</key>
 	<array>
-		<dict/>
+		<dict>
+			<key>idVendor</key>
+			<integer>3695</integer>
+		</dict>
 	</array>
 </dict>
 </plist>

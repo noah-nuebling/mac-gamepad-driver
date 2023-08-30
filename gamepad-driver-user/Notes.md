@@ -10,6 +10,8 @@
 - Debugging Workflow Demo: (starts at 25:00) https://developer.apple.com/videos/play/wwdc2019/702/
 - Apple Game Controller Backward Compatibility: (They simulate Xbox 360 Controller) https://developer.apple.com/documentation/gamecontroller/understanding_game_controller_backward_compatibility
     - They provide and interface which sends Xbox 360 controller reports
+- Tutorial on matching with devices: https://developer.apple.com/news/?id=zk5xdwbn
+Demystifying code signing for DriverKit: https://developer.apple.com/news/?id=c63qcok4
 
 ## Examples
 
@@ -21,6 +23,7 @@
 - IOUserHIDDevice: https://developer.apple.com/documentation/hiddriverkit/iouserhiddevice
 - 360Controller impl: https://github.com/360Controller/360Controller/blob/master/360Controller/Controller.cpp
 - Gamepad Tester: https://hardwaretester.com/gamepad
+- Make sure you add the capabilites (aka entitlements?) for the driver to the app identifier under https://developer.apple.com/account/resources/identifiers/
 
 ## Debugging
 
@@ -37,3 +40,8 @@ log stream --predicate 'sender="[your driver bundle id].dext"'
 ```
 
 For example of how to attach lldb see the Debugging Workflow Demo (mentioned above)
+
+## Questions & Issues
+
+- Should the IOProviderClass specified in the personalities be IOUSBHostDevice or IOUSBDevice? 360Controller uses IOUSBDevice. In the registry we find IOUSBHostDevice instances which inherit from IOUSBDevice. In IOKit docs there is IOUSBHostDevice which inherits from IOUSBHostDevice, but in the DriverKit docs, there is IOUSBHostDevice, and it inherits from IOService. And there is no IOUSBDevice. So I think we should use IOUSBHostDevice.
+- The kernel fails to load the driver with error "Unsatisfied Entitlements: com.apple.developer.driverkit.transport.usb". Here's a thread on this issue: https://developer.apple.com/forums/thread/666632 

@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "https://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+  <dict>
+    <key>application-identifier</key>
+    <string>LM5Z78756B.com.nuebling.gamepad-driver-app.gamepad-driver-user</string>
+    <key>com.apple.application-identifier</key>
+    <string>LM5Z78756B.com.nuebling.gamepad-driver-app.gamepad-driver-user</string>
+    <key>com.apple.developer.driverkit</key>
+    <true/>
+    <key>com.apple.developer.driverkit.allow-third-party-userclients</key>
+    <true/>
+    <key>com.apple.developer.driverkit.family.hid.device</key>
+    <true/>
+    <key>com.apple.developer.driverkit.transport.hid</key>
+    <true/>
+    <key>com.apple.developer.driverkit.transport.usb</key>
+    <array>
+      <dict>
+        <key>idProduct</key>
+        <integer>690</integer>
+        <key>idVendor</key>
+        <integer>3695</integer>
+      </dict>
+    </array>
+    <key>com.apple.developer.team-identifier</key>
+    <string>LM5Z78756B</string>
+    <key>com.apple.security.get-task-allow</key>
+    <true/>
+    <key>get-task-allow</key>
+    <true/>
+  </dict>
+</plist>

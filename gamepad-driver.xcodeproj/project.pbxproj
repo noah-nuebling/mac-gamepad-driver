@@ -188,10 +188,10 @@
 		4F3BF6482A9ECE6900F1790B /* gamepad-driver-user */ = {
 			isa = PBXGroup;
 			children = (
-				4F541BD72A9FBA270030912B /* gamepad-driver-user.entitlements */,
 				4F3BF64B2A9ECE6900F1790B /* gamepad_driver_user.iig */,
 				4F3BF6492A9ECE6900F1790B /* gamepad_driver_user.cpp */,
 				4F3BF64D2A9ECE6900F1790B /* Info.plist */,
+				4F541BD72A9FBA270030912B /* gamepad-driver-user.entitlements */,
 				4F3BF6552A9ED2C000F1790B /* Notes.md */,
 			);
 			path = "gamepad-driver-user";
@@ -701,6 +701,7 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				CODE_SIGN_ENTITLEMENTS = "gamepad-driver-user/gamepad-driver-user.entitlements";
+				CODE_SIGN_IDENTITY = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_TEAM = LM5Z78756B;
@@ -710,6 +711,7 @@
 				MARKETING_VERSION = 1.0;
 				PRODUCT_BUNDLE_IDENTIFIER = "com.nuebling.gamepad-driver-app.gamepad-driver-user";
 				PRODUCT_NAME = "$(inherited)";
+				PROVISIONING_PROFILE_SPECIFIER = "";
 				RUN_CLANG_STATIC_ANALYZER = YES;
 				SDKROOT = driverkit;
 				SKIP_INSTALL = YES;
@@ -721,6 +723,7 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				CODE_SIGN_ENTITLEMENTS = "gamepad-driver-user/gamepad-driver-user.entitlements";
+				CODE_SIGN_IDENTITY = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_TEAM = LM5Z78756B;
@@ -730,6 +733,7 @@
 				MARKETING_VERSION = 1.0;
 				PRODUCT_BUNDLE_IDENTIFIER = "com.nuebling.gamepad-driver-app.gamepad-driver-user";
 				PRODUCT_NAME = "$(inherited)";
+				PROVISIONING_PROFILE_SPECIFIER = "";
 				RUN_CLANG_STATIC_ANALYZER = YES;
 				SDKROOT = driverkit;
 				SKIP_INSTALL = YES;
