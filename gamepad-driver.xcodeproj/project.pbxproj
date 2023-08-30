@@ -93,6 +93,7 @@
 		4F541BC92A9FB5220030912B /* README.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = README.md; sourceTree = "<group>"; };
 		4F541BCA2A9FB5220030912B /* .gitignore */ = {isa = PBXFileReference; lastKnownFileType = text; path = .gitignore; sourceTree = "<group>"; };
 		4F541BCB2A9FB5220030912B /* HIDKeyboardDriver.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; path = HIDKeyboardDriver.xcodeproj; sourceTree = "<group>"; };
+		4F541BD72A9FBA270030912B /* gamepad-driver-user.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = "gamepad-driver-user.entitlements"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -187,6 +188,7 @@
 		4F3BF6482A9ECE6900F1790B /* gamepad-driver-user */ = {
 			isa = PBXGroup;
 			children = (
+				4F541BD72A9FBA270030912B /* gamepad-driver-user.entitlements */,
 				4F3BF64B2A9ECE6900F1790B /* gamepad_driver_user.iig */,
 				4F3BF6492A9ECE6900F1790B /* gamepad_driver_user.cpp */,
 				4F3BF64D2A9ECE6900F1790B /* Info.plist */,
@@ -206,13 +208,13 @@
 		4F541BB72A9FB5220030912B /* HandlingKeyboardEventsFromAHumanInterfaceDevice */ = {
 			isa = PBXGroup;
 			children = (
+				4F541BCB2A9FB5220030912B /* HIDKeyboardDriver.xcodeproj */,
 				4F541BB82A9FB5220030912B /* Configuration */,
 				4F541BBA2A9FB5220030912B /* LICENSE */,
 				4F541BBC2A9FB5220030912B /* HIDKeyboardApp */,
 				4F541BC42A9FB5220030912B /* HIDKeyboardDriver */,
 				4F541BC92A9FB5220030912B /* README.md */,
 				4F541BCA2A9FB5220030912B /* .gitignore */,
-				4F541BCB2A9FB5220030912B /* HIDKeyboardDriver.xcodeproj */,
 			);
 			path = HandlingKeyboardEventsFromAHumanInterfaceDevice;
 			sourceTree = "<group>";
@@ -698,6 +700,7 @@
 		4F3BF6522A9ECE6900F1790B /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				CODE_SIGN_ENTITLEMENTS = "gamepad-driver-user/gamepad-driver-user.entitlements";
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_TEAM = LM5Z78756B;
@@ -717,6 +720,7 @@
 		4F3BF6532A9ECE6900F1790B /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				CODE_SIGN_ENTITLEMENTS = "gamepad-driver-user/gamepad-driver-user.entitlements";
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_TEAM = LM5Z78756B;

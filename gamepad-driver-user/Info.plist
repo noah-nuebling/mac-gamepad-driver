@@ -30,6 +30,10 @@
 			<string>$(PRODUCT_BUNDLE_IDENTIFIER)</string>
 			<key>CFBundleIdentifier</key>
 			<string>$(PRODUCT_BUNDLE_IDENTIFIER)</string>
+			<key>idProduct</key>
+			<integer>690</integer>
+			<key>idVendor</key>
+			<integer>3695</integer>
 		</dict>
 	</dict>
 </dict>
