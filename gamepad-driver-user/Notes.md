@@ -36,7 +36,7 @@ log stream --predicate 'process="kernel"'
 or command like
 
 ```
-log stream --predicate 'sender="[your driver bundle id].dext"'
+log stream --predicate 'sender="com.nuebling.gamepad-driver-app.gamepad-driver-user.dext"'
 ```
 
 For example of how to attach lldb see the Debugging Workflow Demo (mentioned above)

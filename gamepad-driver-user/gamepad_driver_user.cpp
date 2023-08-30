@@ -44,7 +44,7 @@ bool gamepad_driver_user::init() {
     /// Allocates memory for ivars struct
     /// And assigns allocated memory to inherited `ivars` variable. I think all drivers need to do it like that.
     
-    os_log(OS_LOG_DEFAULT, "Hello Worldddd");
+    os_log(OS_LOG_DEFAULT, "Groot: Init");
     
     if (!super::init()) {
         return false;
@@ -64,6 +64,8 @@ void gamepad_driver_user::free() {
     /// free
     /// Frees memory of ivars struct
     
+    os_log(OS_LOG_DEFAULT, "Groot: Free");
+    
     if (ivars) {
         OSSafeReleaseNULL(_elements);
         OSSafeReleaseNULL(_keyboard.elements);
@@ -73,27 +75,47 @@ void gamepad_driver_user::free() {
     super::free();
 }
 
+//kern_return_t IMPL(gamepad_driver_user, Start) {
+//    
+//    /// Declare vars
+//    kern_return_t ret;
+//    
+//    /// Call super
+//    ret = Start(provider, SUPERDISPATCH);
+//    if (ret != kIOReturnSuccess) goto fail;
+//    
+//    /// Register self with system
+//    ret = RegisterService();
+//    if (ret != kIOReturnSuccess) goto fail;
+//    
+//    /// Validate
+//    assert(ret == kIOReturnSuccess);
+//    
+//    /// Log
+//    os_log(OS_LOG_DEFAULT, "Groot: Start");
+//    
+//    /// Return success
+//    return ret;
+//    
+//    /// Handle failed start
+//fail:
+//    os_log(OS_LOG_DEFAULT, "Groot: Failed to start");
+//    Stop(provider, SUPERDISPATCH);
+//    return ret;
+//}
+//
 //kern_return_t IMPL(gamepad_driver_user, Stop) {
+//    
 //    /// Initial implementation copied from Karabiner https://github.com/pqrs-org/Karabiner-DriverKit-VirtualHIDDevice/blob/151fefd3f5cdbe00874bd4c25cde0ded9665878f/src/DriverKit/Karabiner-DriverKit-VirtualHIDDevice/org_pqrs_Karabiner_DriverKit_VirtualHIDPointing.cpp#L130C1-L137C1
 //    
-//    os_log(OS_LOG_DEFAULT, "Stopping driver");
+//    os_log(OS_LOG_DEFAULT, "Groot: Stop");
 //    return Stop(provider, SUPERDISPATCH);
 //}
 
 
-/*
- 
- vvv Docs say you should override handleStart() instead of this.
-kern_return_t IMPL(gamepad_driver_user, Start) {
-    kern_return_t ret;
-    ret = Start(provider, SUPERDISPATCH);
-    os_log(OS_LOG_DEFAULT, "Hello World");
-    return ret;
-}
- */
-
 /// --- IOHIDDevice ---
 
+/*
 kern_return_t gamepad_driver_user::handleReport(uint64_t timestamp, IOMemoryDescriptor* report, uint32_t reportLength, IOHIDReportType reportType, IOOptionBits options) {
     
     
@@ -102,7 +124,7 @@ kern_return_t gamepad_driver_user::handleReport(uint64_t timestamp, IOMemoryDesc
     return KERN_SUCCESS;
 }
 
-/*
+
 kern_return_t gamepad_driver_user::getReport(IOMemoryDescriptor *report, IOHIDReportType reportType, IOOptionBits options, uint32_t completionTimeout, OSAction *action) {
 
     return KERN_SUCCESS;
@@ -121,26 +143,21 @@ void gamepad_driver_user::setProperty(OSObject *key, OSObject *value) {
 
 /// --- IOUserHIDDevice ---
 
-bool gamepad_driver_user::handleStart(IOService *provider) {
-    
-    /// vvv Code is from keyboard sample project Start() method. Probably doesn't make sense here.
-    kern_return_t ret = KERN_SUCCESS;
-//    ret = Start(provider, SUPERDISPATCH);
-    os_log(OS_LOG_DEFAULT, "Hello World");
-    
-    return ret;
-}
-
-OSDictionary *gamepad_driver_user::newDeviceDescription(void) {
-    return OSDictionaryCreate();
-}
-OSData *gamepad_driver_user::newReportDescriptor(void) {
-    uint8_t *bytes = NULL;
-    return OSDataCreate(bytes, 0);
-}
-
-/// --- Weird compiler errors ---
-
-//kern_return_t gamepad_driver_user::_Dispatch(void *self, const IORPC rpc) {
-//    return KERN_SUCCESS;
+//bool gamepad_driver_user::handleStart(IOService *provider) {
+//
+//    /// vvv Code is from keyboard sample project Start() method. Probably doesn't make sense here.
+//    kern_return_t ret = KERN_SUCCESS;
+////    ret = Start(provider, SUPERDISPATCH);
+//    os_log(OS_LOG_DEFAULT, "Hello World");
+//
+//    return ret;
 //}
+//
+//OSDictionary *gamepad_driver_user::newDeviceDescription(void) {
+//    return OSDictionaryCreate();
+//}
+//OSData *gamepad_driver_user::newReportDescriptor(void) {
+//    uint8_t *bytes = NULL;
+//    return OSDataCreate(bytes, 0);
+//}
+

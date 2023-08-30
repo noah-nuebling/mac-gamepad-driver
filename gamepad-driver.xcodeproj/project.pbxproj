@@ -13,12 +13,12 @@
 		4F3BF6352A9ECDE900F1790B /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4F3BF6342A9ECDE900F1790B /* ContentView.swift */; };
 		4F3BF6372A9ECDEA00F1790B /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 4F3BF6362A9ECDEA00F1790B /* Assets.xcassets */; };
 		4F3BF63A2A9ECDEA00F1790B /* Preview Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 4F3BF6392A9ECDEA00F1790B /* Preview Assets.xcassets */; };
-		4F3BF6472A9ECE6900F1790B /* DriverKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 4F3BF6462A9ECE6900F1790B /* DriverKit.framework */; };
 		4F3BF64A2A9ECE6900F1790B /* gamepad_driver_user.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 4F3BF6492A9ECE6900F1790B /* gamepad_driver_user.cpp */; };
 		4F3BF64C2A9ECE6900F1790B /* gamepad_driver_user.iig in Sources */ = {isa = PBXBuildFile; fileRef = 4F3BF64B2A9ECE6900F1790B /* gamepad_driver_user.iig */; };
 		4F3BF6502A9ECE6900F1790B /* com.nuebling.gamepad-driver-app.gamepad-driver-user.dext in Embed System Extensions */ = {isa = PBXBuildFile; fileRef = 4F3BF6442A9ECE6900F1790B /* com.nuebling.gamepad-driver-app.gamepad-driver-user.dext */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
 		4F3BF6572A9EDF5A00F1790B /* ExtensionInstaller.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4F3BF6562A9EDF5A00F1790B /* ExtensionInstaller.swift */; };
-		4F541B532A9F45260030912B /* HIDDriverKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 4F541B4F2A9F45140030912B /* HIDDriverKit.framework */; };
+		4FDFE84B2AA0014D0068629C /* HIDDriverKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 4F541B4F2A9F45140030912B /* HIDDriverKit.framework */; };
+		4FDFE84E2AA001770068629C /* DriverKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 4FDFE84D2AA001770068629C /* DriverKit.framework */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -94,6 +94,7 @@
 		4F541BCA2A9FB5220030912B /* .gitignore */ = {isa = PBXFileReference; lastKnownFileType = text; path = .gitignore; sourceTree = "<group>"; };
 		4F541BCB2A9FB5220030912B /* HIDKeyboardDriver.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; path = HIDKeyboardDriver.xcodeproj; sourceTree = "<group>"; };
 		4F541BD72A9FBA270030912B /* gamepad-driver-user.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = "gamepad-driver-user.entitlements"; sourceTree = "<group>"; };
+		4FDFE84D2AA001770068629C /* DriverKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = DriverKit.framework; path = ../../../../System/DriverKit/System/Library/Frameworks/DriverKit.framework; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -115,8 +116,8 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				4F3BF6472A9ECE6900F1790B /* DriverKit.framework in Frameworks */,
-				4F541B532A9F45260030912B /* HIDDriverKit.framework in Frameworks */,
+				4FDFE84B2AA0014D0068629C /* HIDDriverKit.framework in Frameworks */,
+				4FDFE84E2AA001770068629C /* DriverKit.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -179,6 +180,7 @@
 		4F3BF6452A9ECE6900F1790B /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				4FDFE84D2AA001770068629C /* DriverKit.framework */,
 				4F541B4F2A9F45140030912B /* HIDDriverKit.framework */,
 				4F3BF6462A9ECE6900F1790B /* DriverKit.framework */,
 			);
@@ -330,6 +332,7 @@
 			isa = PBXNativeTarget;
 			buildConfigurationList = 4F3BF6512A9ECE6900F1790B /* Build configuration list for PBXNativeTarget "gamepad-driver-user" */;
 			buildPhases = (
+				4FDFE8502AA001CD0068629C /* Increase Build Number */,
 				4F3BF63F2A9ECE6900F1790B /* Headers */,
 				4F3BF6402A9ECE6900F1790B /* Sources */,
 				4F3BF6412A9ECE6900F1790B /* Frameworks */,
@@ -433,6 +436,28 @@
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXResourcesBuildPhase section */
+
+/* Begin PBXShellScriptBuildPhase section */
+		4FDFE8502AA001CD0068629C /* Increase Build Number */ = {
+			isa = PBXShellScriptBuildPhase;
+			alwaysOutOfDate = 1;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputFileListPaths = (
+			);
+			inputPaths = (
+			);
+			name = "Increase Build Number";
+			outputFileListPaths = (
+			);
+			outputPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "buildNumber=$(/usr/libexec/PlistBuddy -c \"Print CFBundleVersion\" \"${PROJECT_DIR}/${INFOPLIST_FILE}\")\nbuildNumber=$(($buildNumber + 1))\n/usr/libexec/PlistBuddy -c \"Set :CFBundleVersion $buildNumber\" \"${PROJECT_DIR}/${INFOPLIST_FILE}\" \n";
+		};
+/* End PBXShellScriptBuildPhase section */
 
 /* Begin PBXSourcesBuildPhase section */
 		4F3BF61B2A9ECC4600F1790B /* Sources */ = {
