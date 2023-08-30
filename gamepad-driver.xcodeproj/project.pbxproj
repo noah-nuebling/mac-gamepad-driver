@@ -1,0 +1,639 @@
+// !$*UTF8*$!
+{
+	archiveVersion = 1;
+	classes = {
+	};
+	objectVersion = 56;
+	objects = {
+
+/* Begin PBXBuildFile section */
+		4F3BF6232A9ECC4600F1790B /* gamepad_driver.hpp in Headers */ = {isa = PBXBuildFile; fileRef = 4F3BF6222A9ECC4600F1790B /* gamepad_driver.hpp */; };
+		4F3BF6252A9ECC4600F1790B /* gamepad_driver.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 4F3BF6242A9ECC4600F1790B /* gamepad_driver.cpp */; };
+		4F3BF6332A9ECDE900F1790B /* gamepad_driver_appApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4F3BF6322A9ECDE900F1790B /* gamepad_driver_appApp.swift */; };
+		4F3BF6352A9ECDE900F1790B /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4F3BF6342A9ECDE900F1790B /* ContentView.swift */; };
+		4F3BF6372A9ECDEA00F1790B /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 4F3BF6362A9ECDEA00F1790B /* Assets.xcassets */; };
+		4F3BF63A2A9ECDEA00F1790B /* Preview Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 4F3BF6392A9ECDEA00F1790B /* Preview Assets.xcassets */; };
+		4F3BF6472A9ECE6900F1790B /* DriverKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 4F3BF6462A9ECE6900F1790B /* DriverKit.framework */; };
+		4F3BF64A2A9ECE6900F1790B /* gamepad_driver_user.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 4F3BF6492A9ECE6900F1790B /* gamepad_driver_user.cpp */; };
+		4F3BF64C2A9ECE6900F1790B /* gamepad_driver_user.iig in Sources */ = {isa = PBXBuildFile; fileRef = 4F3BF64B2A9ECE6900F1790B /* gamepad_driver_user.iig */; };
+		4F3BF6502A9ECE6900F1790B /* com.nuebling.gamepad-driver-app.gamepad-driver-user.dext in Embed System Extensions */ = {isa = PBXBuildFile; fileRef = 4F3BF6442A9ECE6900F1790B /* com.nuebling.gamepad-driver-app.gamepad-driver-user.dext */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
+		4F3BF6572A9EDF5A00F1790B /* ExtensionInstaller.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4F3BF6562A9EDF5A00F1790B /* ExtensionInstaller.swift */; };
+/* End PBXBuildFile section */
+
+/* Begin PBXContainerItemProxy section */
+		4F3BF64E2A9ECE6900F1790B /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 4F3BF6162A9ECC4600F1790B /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 4F3BF6432A9ECE6900F1790B;
+			remoteInfo = "gamepad-driver-user";
+		};
+/* End PBXContainerItemProxy section */
+
+/* Begin PBXCopyFilesBuildPhase section */
+		4F3BF6542A9ECE6900F1790B /* Embed System Extensions */ = {
+			isa = PBXCopyFilesBuildPhase;
+			buildActionMask = 2147483647;
+			dstPath = "$(SYSTEM_EXTENSIONS_FOLDER_PATH)";
+			dstSubfolderSpec = 16;
+			files = (
+				4F3BF6502A9ECE6900F1790B /* com.nuebling.gamepad-driver-app.gamepad-driver-user.dext in Embed System Extensions */,
+			);
+			name = "Embed System Extensions";
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXCopyFilesBuildPhase section */
+
+/* Begin PBXFileReference section */
+		4F3BF61F2A9ECC4600F1790B /* gamepad-driver.kext */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = "gamepad-driver.kext"; sourceTree = BUILT_PRODUCTS_DIR; };
+		4F3BF6222A9ECC4600F1790B /* gamepad_driver.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = gamepad_driver.hpp; sourceTree = "<group>"; };
+		4F3BF6242A9ECC4600F1790B /* gamepad_driver.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = gamepad_driver.cpp; sourceTree = "<group>"; };
+		4F3BF6262A9ECC4600F1790B /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		4F3BF6302A9ECDE900F1790B /* gamepad-driver-app.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "gamepad-driver-app.app"; sourceTree = BUILT_PRODUCTS_DIR; };
+		4F3BF6322A9ECDE900F1790B /* gamepad_driver_appApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = gamepad_driver_appApp.swift; sourceTree = "<group>"; };
+		4F3BF6342A9ECDE900F1790B /* ContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
+		4F3BF6362A9ECDEA00F1790B /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
+		4F3BF6392A9ECDEA00F1790B /* Preview Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = "Preview Assets.xcassets"; sourceTree = "<group>"; };
+		4F3BF63B2A9ECDEA00F1790B /* gamepad_driver_app.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = gamepad_driver_app.entitlements; sourceTree = "<group>"; };
+		4F3BF6442A9ECE6900F1790B /* com.nuebling.gamepad-driver-app.gamepad-driver-user.dext */ = {isa = PBXFileReference; explicitFileType = "wrapper.driver-extension"; includeInIndex = 0; path = "com.nuebling.gamepad-driver-app.gamepad-driver-user.dext"; sourceTree = BUILT_PRODUCTS_DIR; };
+		4F3BF6462A9ECE6900F1790B /* DriverKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = DriverKit.framework; path = System/Library/Frameworks/DriverKit.framework; sourceTree = SDKROOT; };
+		4F3BF6492A9ECE6900F1790B /* gamepad_driver_user.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = gamepad_driver_user.cpp; sourceTree = "<group>"; };
+		4F3BF64B2A9ECE6900F1790B /* gamepad_driver_user.iig */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.iig; path = gamepad_driver_user.iig; sourceTree = "<group>"; };
+		4F3BF64D2A9ECE6900F1790B /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		4F3BF6552A9ED2C000F1790B /* Notes.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = Notes.md; sourceTree = "<group>"; };
+		4F3BF6562A9EDF5A00F1790B /* ExtensionInstaller.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ExtensionInstaller.swift; sourceTree = "<group>"; };
+/* End PBXFileReference section */
+
+/* Begin PBXFrameworksBuildPhase section */
+		4F3BF61C2A9ECC4600F1790B /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		4F3BF62D2A9ECDE900F1790B /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		4F3BF6412A9ECE6900F1790B /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				4F3BF6472A9ECE6900F1790B /* DriverKit.framework in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXFrameworksBuildPhase section */
+
+/* Begin PBXGroup section */
+		4F3BF6152A9ECC4600F1790B = {
+			isa = PBXGroup;
+			children = (
+				4F3BF6312A9ECDE900F1790B /* gamepad-driver-app */,
+				4F3BF6482A9ECE6900F1790B /* gamepad-driver-user */,
+				4F3BF6212A9ECC4600F1790B /* gamepad-driver */,
+				4F3BF6452A9ECE6900F1790B /* Frameworks */,
+				4F3BF6202A9ECC4600F1790B /* Products */,
+			);
+			sourceTree = "<group>";
+		};
+		4F3BF6202A9ECC4600F1790B /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				4F3BF61F2A9ECC4600F1790B /* gamepad-driver.kext */,
+				4F3BF6302A9ECDE900F1790B /* gamepad-driver-app.app */,
+				4F3BF6442A9ECE6900F1790B /* com.nuebling.gamepad-driver-app.gamepad-driver-user.dext */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		4F3BF6212A9ECC4600F1790B /* gamepad-driver */ = {
+			isa = PBXGroup;
+			children = (
+				4F3BF6222A9ECC4600F1790B /* gamepad_driver.hpp */,
+				4F3BF6242A9ECC4600F1790B /* gamepad_driver.cpp */,
+				4F3BF6262A9ECC4600F1790B /* Info.plist */,
+			);
+			path = "gamepad-driver";
+			sourceTree = "<group>";
+		};
+		4F3BF6312A9ECDE900F1790B /* gamepad-driver-app */ = {
+			isa = PBXGroup;
+			children = (
+				4F3BF6322A9ECDE900F1790B /* gamepad_driver_appApp.swift */,
+				4F3BF6342A9ECDE900F1790B /* ContentView.swift */,
+				4F3BF6562A9EDF5A00F1790B /* ExtensionInstaller.swift */,
+				4F3BF6362A9ECDEA00F1790B /* Assets.xcassets */,
+				4F3BF63B2A9ECDEA00F1790B /* gamepad_driver_app.entitlements */,
+				4F3BF6382A9ECDEA00F1790B /* Preview Content */,
+			);
+			path = "gamepad-driver-app";
+			sourceTree = "<group>";
+		};
+		4F3BF6382A9ECDEA00F1790B /* Preview Content */ = {
+			isa = PBXGroup;
+			children = (
+				4F3BF6392A9ECDEA00F1790B /* Preview Assets.xcassets */,
+			);
+			path = "Preview Content";
+			sourceTree = "<group>";
+		};
+		4F3BF6452A9ECE6900F1790B /* Frameworks */ = {
+			isa = PBXGroup;
+			children = (
+				4F3BF6462A9ECE6900F1790B /* DriverKit.framework */,
+			);
+			name = Frameworks;
+			sourceTree = "<group>";
+		};
+		4F3BF6482A9ECE6900F1790B /* gamepad-driver-user */ = {
+			isa = PBXGroup;
+			children = (
+				4F3BF6492A9ECE6900F1790B /* gamepad_driver_user.cpp */,
+				4F3BF64B2A9ECE6900F1790B /* gamepad_driver_user.iig */,
+				4F3BF64D2A9ECE6900F1790B /* Info.plist */,
+				4F3BF6552A9ED2C000F1790B /* Notes.md */,
+			);
+			path = "gamepad-driver-user";
+			sourceTree = "<group>";
+		};
+/* End PBXGroup section */
+
+/* Begin PBXHeadersBuildPhase section */
+		4F3BF61A2A9ECC4600F1790B /* Headers */ = {
+			isa = PBXHeadersBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				4F3BF6232A9ECC4600F1790B /* gamepad_driver.hpp in Headers */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		4F3BF63F2A9ECE6900F1790B /* Headers */ = {
+			isa = PBXHeadersBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXHeadersBuildPhase section */
+
+/* Begin PBXNativeTarget section */
+		4F3BF61E2A9ECC4600F1790B /* gamepad-driver */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 4F3BF6292A9ECC4600F1790B /* Build configuration list for PBXNativeTarget "gamepad-driver" */;
+			buildPhases = (
+				4F3BF61A2A9ECC4600F1790B /* Headers */,
+				4F3BF61B2A9ECC4600F1790B /* Sources */,
+				4F3BF61C2A9ECC4600F1790B /* Frameworks */,
+				4F3BF61D2A9ECC4600F1790B /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = "gamepad-driver";
+			productName = "gamepad-driver";
+			productReference = 4F3BF61F2A9ECC4600F1790B /* gamepad-driver.kext */;
+			productType = "com.apple.product-type.kernel-extension";
+		};
+		4F3BF62F2A9ECDE900F1790B /* gamepad-driver-app */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 4F3BF63C2A9ECDEA00F1790B /* Build configuration list for PBXNativeTarget "gamepad-driver-app" */;
+			buildPhases = (
+				4F3BF62C2A9ECDE900F1790B /* Sources */,
+				4F3BF62D2A9ECDE900F1790B /* Frameworks */,
+				4F3BF62E2A9ECDE900F1790B /* Resources */,
+				4F3BF6542A9ECE6900F1790B /* Embed System Extensions */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				4F3BF64F2A9ECE6900F1790B /* PBXTargetDependency */,
+			);
+			name = "gamepad-driver-app";
+			productName = "gamepad-driver-app";
+			productReference = 4F3BF6302A9ECDE900F1790B /* gamepad-driver-app.app */;
+			productType = "com.apple.product-type.application";
+		};
+		4F3BF6432A9ECE6900F1790B /* gamepad-driver-user */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 4F3BF6512A9ECE6900F1790B /* Build configuration list for PBXNativeTarget "gamepad-driver-user" */;
+			buildPhases = (
+				4F3BF63F2A9ECE6900F1790B /* Headers */,
+				4F3BF6402A9ECE6900F1790B /* Sources */,
+				4F3BF6412A9ECE6900F1790B /* Frameworks */,
+				4F3BF6422A9ECE6900F1790B /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = "gamepad-driver-user";
+			productName = "gamepad-driver-user";
+			productReference = 4F3BF6442A9ECE6900F1790B /* com.nuebling.gamepad-driver-app.gamepad-driver-user.dext */;
+			productType = "com.apple.product-type.driver-extension";
+		};
+/* End PBXNativeTarget section */
+
+/* Begin PBXProject section */
+		4F3BF6162A9ECC4600F1790B /* Project object */ = {
+			isa = PBXProject;
+			attributes = {
+				BuildIndependentTargetsInParallel = 1;
+				LastSwiftUpdateCheck = 1430;
+				LastUpgradeCheck = 1430;
+				TargetAttributes = {
+					4F3BF61E2A9ECC4600F1790B = {
+						CreatedOnToolsVersion = 14.3;
+					};
+					4F3BF62F2A9ECDE900F1790B = {
+						CreatedOnToolsVersion = 14.3;
+					};
+					4F3BF6432A9ECE6900F1790B = {
+						CreatedOnToolsVersion = 14.3;
+					};
+				};
+			};
+			buildConfigurationList = 4F3BF6192A9ECC4600F1790B /* Build configuration list for PBXProject "gamepad-driver" */;
+			compatibilityVersion = "Xcode 14.0";
+			developmentRegion = en;
+			hasScannedForEncodings = 0;
+			knownRegions = (
+				en,
+				Base,
+			);
+			mainGroup = 4F3BF6152A9ECC4600F1790B;
+			productRefGroup = 4F3BF6202A9ECC4600F1790B /* Products */;
+			projectDirPath = "";
+			projectRoot = "";
+			targets = (
+				4F3BF62F2A9ECDE900F1790B /* gamepad-driver-app */,
+				4F3BF61E2A9ECC4600F1790B /* gamepad-driver */,
+				4F3BF6432A9ECE6900F1790B /* gamepad-driver-user */,
+			);
+		};
+/* End PBXProject section */
+
+/* Begin PBXResourcesBuildPhase section */
+		4F3BF61D2A9ECC4600F1790B /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		4F3BF62E2A9ECDE900F1790B /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				4F3BF63A2A9ECDEA00F1790B /* Preview Assets.xcassets in Resources */,
+				4F3BF6372A9ECDEA00F1790B /* Assets.xcassets in Resources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		4F3BF6422A9ECE6900F1790B /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXResourcesBuildPhase section */
+
+/* Begin PBXSourcesBuildPhase section */
+		4F3BF61B2A9ECC4600F1790B /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				4F3BF6252A9ECC4600F1790B /* gamepad_driver.cpp in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		4F3BF62C2A9ECDE900F1790B /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				4F3BF6352A9ECDE900F1790B /* ContentView.swift in Sources */,
+				4F3BF6572A9EDF5A00F1790B /* ExtensionInstaller.swift in Sources */,
+				4F3BF6332A9ECDE900F1790B /* gamepad_driver_appApp.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		4F3BF6402A9ECE6900F1790B /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				4F3BF64C2A9ECE6900F1790B /* gamepad_driver_user.iig in Sources */,
+				4F3BF64A2A9ECE6900F1790B /* gamepad_driver_user.cpp in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXSourcesBuildPhase section */
+
+/* Begin PBXTargetDependency section */
+		4F3BF64F2A9ECE6900F1790B /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = 4F3BF6432A9ECE6900F1790B /* gamepad-driver-user */;
+			targetProxy = 4F3BF64E2A9ECE6900F1790B /* PBXContainerItemProxy */;
+		};
+/* End PBXTargetDependency section */
+
+/* Begin XCBuildConfiguration section */
+		4F3BF6272A9ECC4600F1790B /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++20";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = dwarf;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				ENABLE_TESTABILITY = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu11;
+				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"DEBUG=1",
+					"$(inherited)",
+				);
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				MACOSX_DEPLOYMENT_TARGET = 13.3;
+				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
+				MTL_FAST_MATH = YES;
+				ONLY_ACTIVE_ARCH = YES;
+				SDKROOT = macosx;
+			};
+			name = Debug;
+		};
+		4F3BF6282A9ECC4600F1790B /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++20";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				ENABLE_NS_ASSERTIONS = NO;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu11;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				MACOSX_DEPLOYMENT_TARGET = 13.3;
+				MTL_ENABLE_DEBUG_INFO = NO;
+				MTL_FAST_MATH = YES;
+				SDKROOT = macosx;
+			};
+			name = Release;
+		};
+		4F3BF62A2A9ECC4600F1790B /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = NO;
+				CODE_SIGN_STYLE = Automatic;
+				COMBINE_HIDPI_IMAGES = YES;
+				CURRENT_PROJECT_VERSION = 1.0.0d1;
+				DEVELOPMENT_TEAM = LM5Z78756B;
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = "gamepad-driver/Info.plist";
+				INFOPLIST_KEY_NSHumanReadableCopyright = "";
+				MACOSX_DEPLOYMENT_TARGET = 13.3;
+				MARKETING_VERSION = 1.0;
+				MODULE_NAME = com.nuebling.gamepad_driver;
+				MODULE_VERSION = 1.0.0d1;
+				PRODUCT_BUNDLE_IDENTIFIER = "com.nuebling.gamepad-driver";
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				RUN_CLANG_STATIC_ANALYZER = YES;
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				WRAPPER_EXTENSION = kext;
+			};
+			name = Debug;
+		};
+		4F3BF62B2A9ECC4600F1790B /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = NO;
+				CODE_SIGN_STYLE = Automatic;
+				COMBINE_HIDPI_IMAGES = YES;
+				CURRENT_PROJECT_VERSION = 1.0.0d1;
+				DEVELOPMENT_TEAM = LM5Z78756B;
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = "gamepad-driver/Info.plist";
+				INFOPLIST_KEY_NSHumanReadableCopyright = "";
+				MACOSX_DEPLOYMENT_TARGET = 13.3;
+				MARKETING_VERSION = 1.0;
+				MODULE_NAME = com.nuebling.gamepad_driver;
+				MODULE_VERSION = 1.0.0d1;
+				PRODUCT_BUNDLE_IDENTIFIER = "com.nuebling.gamepad-driver";
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				RUN_CLANG_STATIC_ANALYZER = YES;
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				WRAPPER_EXTENSION = kext;
+			};
+			name = Release;
+		};
+		4F3BF63D2A9ECDEA00F1790B /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				CODE_SIGN_ENTITLEMENTS = "gamepad-driver-app/gamepad_driver_app.entitlements";
+				CODE_SIGN_STYLE = Automatic;
+				COMBINE_HIDPI_IMAGES = YES;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_ASSET_PATHS = "\"gamepad-driver-app/Preview Content\"";
+				DEVELOPMENT_TEAM = LM5Z78756B;
+				ENABLE_HARDENED_RUNTIME = YES;
+				ENABLE_PREVIEWS = YES;
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_KEY_NSHumanReadableCopyright = "";
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/../Frameworks",
+				);
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = "com.nuebling.gamepad-driver-app";
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_ACTIVE_COMPILATION_CONDITIONS = DEBUG;
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
+				SWIFT_VERSION = 5.0;
+			};
+			name = Debug;
+		};
+		4F3BF63E2A9ECDEA00F1790B /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				CODE_SIGN_ENTITLEMENTS = "gamepad-driver-app/gamepad_driver_app.entitlements";
+				CODE_SIGN_STYLE = Automatic;
+				COMBINE_HIDPI_IMAGES = YES;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_ASSET_PATHS = "\"gamepad-driver-app/Preview Content\"";
+				DEVELOPMENT_TEAM = LM5Z78756B;
+				ENABLE_HARDENED_RUNTIME = YES;
+				ENABLE_PREVIEWS = YES;
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_KEY_NSHumanReadableCopyright = "";
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/../Frameworks",
+				);
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = "com.nuebling.gamepad-driver-app";
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_COMPILATION_MODE = wholemodule;
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_OPTIMIZATION_LEVEL = "-O";
+				SWIFT_VERSION = 5.0;
+			};
+			name = Release;
+		};
+		4F3BF6522A9ECE6900F1790B /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = LM5Z78756B;
+				DRIVERKIT_DEPLOYMENT_TARGET = 22.4;
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = "gamepad-driver-user/Info.plist";
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = "com.nuebling.gamepad-driver-app.gamepad-driver-user";
+				PRODUCT_NAME = "$(inherited)";
+				RUN_CLANG_STATIC_ANALYZER = YES;
+				SDKROOT = driverkit;
+				SKIP_INSTALL = YES;
+				SWIFT_EMIT_LOC_STRINGS = YES;
+			};
+			name = Debug;
+		};
+		4F3BF6532A9ECE6900F1790B /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = LM5Z78756B;
+				DRIVERKIT_DEPLOYMENT_TARGET = 22.4;
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = "gamepad-driver-user/Info.plist";
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = "com.nuebling.gamepad-driver-app.gamepad-driver-user";
+				PRODUCT_NAME = "$(inherited)";
+				RUN_CLANG_STATIC_ANALYZER = YES;
+				SDKROOT = driverkit;
+				SKIP_INSTALL = YES;
+				SWIFT_EMIT_LOC_STRINGS = YES;
+			};
+			name = Release;
+		};
+/* End XCBuildConfiguration section */
+
+/* Begin XCConfigurationList section */
+		4F3BF6192A9ECC4600F1790B /* Build configuration list for PBXProject "gamepad-driver" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				4F3BF6272A9ECC4600F1790B /* Debug */,
+				4F3BF6282A9ECC4600F1790B /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		4F3BF6292A9ECC4600F1790B /* Build configuration list for PBXNativeTarget "gamepad-driver" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				4F3BF62A2A9ECC4600F1790B /* Debug */,
+				4F3BF62B2A9ECC4600F1790B /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		4F3BF63C2A9ECDEA00F1790B /* Build configuration list for PBXNativeTarget "gamepad-driver-app" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				4F3BF63D2A9ECDEA00F1790B /* Debug */,
+				4F3BF63E2A9ECDEA00F1790B /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		4F3BF6512A9ECE6900F1790B /* Build configuration list for PBXNativeTarget "gamepad-driver-user" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				4F3BF6522A9ECE6900F1790B /* Debug */,
+				4F3BF6532A9ECE6900F1790B /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+/* End XCConfigurationList section */
+	};
+	rootObject = 4F3BF6162A9ECC4600F1790B /* Project object */;
+}

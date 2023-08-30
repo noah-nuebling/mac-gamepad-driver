@@ -1,0 +1,22 @@
+//
+//  gamepad_driver_user.iig
+//  gamepad-driver-user
+//
+//  Created by Noah Nübling on 30.08.23.
+//
+
+#ifndef gamepad_driver_user_h
+#define gamepad_driver_user_h
+
+#include <Availability.h>
+#include <DriverKit/IOService.iig>
+//#include <HIDDriverKit/IOUserHIDDevice.iig>
+
+class gamepad_driver_user: public /*IOUserHIDDevice*/IOService {
+    
+public:
+    virtual kern_return_t
+    Start(IOService * provider) override;
+};
+
+#endif /* gamepad_driver_user_h */
