@@ -29,6 +29,20 @@
 			remoteGlobalIDString = 4F3BF6432A9ECE6900F1790B;
 			remoteInfo = "gamepad-driver-user";
 		};
+		4F541BD02A9FB5220030912B /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 4F541BCB2A9FB5220030912B /* HIDKeyboardDriver.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = 7382FFDE23FB0205006D6B39;
+			remoteInfo = HIDKeyboardApp;
+		};
+		4F541BD22A9FB5220030912B /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 4F541BCB2A9FB5220030912B /* HIDKeyboardDriver.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = 0F3C564B22F499310042723A;
+			remoteInfo = KeyboardDriver;
+		};
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXCopyFilesBuildPhase section */
@@ -64,6 +78,21 @@
 		4F3BF6552A9ED2C000F1790B /* Notes.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = Notes.md; sourceTree = "<group>"; };
 		4F3BF6562A9EDF5A00F1790B /* ExtensionInstaller.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ExtensionInstaller.swift; sourceTree = "<group>"; };
 		4F541B4F2A9F45140030912B /* HIDDriverKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = HIDDriverKit.framework; path = ../../../../System/DriverKit/System/Library/Frameworks/HIDDriverKit.framework; sourceTree = "<group>"; };
+		4F541BB92A9FB5220030912B /* SampleCode.xcconfig */ = {isa = PBXFileReference; lastKnownFileType = text.xcconfig; path = SampleCode.xcconfig; sourceTree = "<group>"; };
+		4F541BBB2A9FB5220030912B /* LICENSE.txt */ = {isa = PBXFileReference; lastKnownFileType = text; path = LICENSE.txt; sourceTree = "<group>"; };
+		4F541BBD2A9FB5220030912B /* ViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ViewController.swift; sourceTree = "<group>"; };
+		4F541BBE2A9FB5220030912B /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
+		4F541BC02A9FB5220030912B /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/Main.storyboard; sourceTree = "<group>"; };
+		4F541BC12A9FB5220030912B /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
+		4F541BC22A9FB5220030912B /* HIDKeyboardApp.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = HIDKeyboardApp.entitlements; sourceTree = "<group>"; };
+		4F541BC32A9FB5220030912B /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		4F541BC52A9FB5220030912B /* HIDKeyboardDriver.iig */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.iig; path = HIDKeyboardDriver.iig; sourceTree = "<group>"; };
+		4F541BC62A9FB5220030912B /* HIDKeyboardDriver.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = HIDKeyboardDriver.cpp; sourceTree = "<group>"; };
+		4F541BC72A9FB5220030912B /* HIDKeyboardDriver.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = HIDKeyboardDriver.entitlements; sourceTree = "<group>"; };
+		4F541BC82A9FB5220030912B /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		4F541BC92A9FB5220030912B /* README.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = README.md; sourceTree = "<group>"; };
+		4F541BCA2A9FB5220030912B /* .gitignore */ = {isa = PBXFileReference; lastKnownFileType = text; path = .gitignore; sourceTree = "<group>"; };
+		4F541BCB2A9FB5220030912B /* HIDKeyboardDriver.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; path = HIDKeyboardDriver.xcodeproj; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -96,6 +125,7 @@
 		4F3BF6152A9ECC4600F1790B = {
 			isa = PBXGroup;
 			children = (
+				4F541BB62A9FB5090030912B /* Docs and Examples */,
 				4F3BF6312A9ECDE900F1790B /* gamepad-driver-app */,
 				4F3BF6482A9ECE6900F1790B /* gamepad-driver-user */,
 				4F3BF6212A9ECC4600F1790B /* gamepad-driver */,
@@ -163,6 +193,77 @@
 				4F3BF6552A9ED2C000F1790B /* Notes.md */,
 			);
 			path = "gamepad-driver-user";
+			sourceTree = "<group>";
+		};
+		4F541BB62A9FB5090030912B /* Docs and Examples */ = {
+			isa = PBXGroup;
+			children = (
+				4F541BB72A9FB5220030912B /* HandlingKeyboardEventsFromAHumanInterfaceDevice */,
+			);
+			path = "Docs and Examples";
+			sourceTree = "<group>";
+		};
+		4F541BB72A9FB5220030912B /* HandlingKeyboardEventsFromAHumanInterfaceDevice */ = {
+			isa = PBXGroup;
+			children = (
+				4F541BB82A9FB5220030912B /* Configuration */,
+				4F541BBA2A9FB5220030912B /* LICENSE */,
+				4F541BBC2A9FB5220030912B /* HIDKeyboardApp */,
+				4F541BC42A9FB5220030912B /* HIDKeyboardDriver */,
+				4F541BC92A9FB5220030912B /* README.md */,
+				4F541BCA2A9FB5220030912B /* .gitignore */,
+				4F541BCB2A9FB5220030912B /* HIDKeyboardDriver.xcodeproj */,
+			);
+			path = HandlingKeyboardEventsFromAHumanInterfaceDevice;
+			sourceTree = "<group>";
+		};
+		4F541BB82A9FB5220030912B /* Configuration */ = {
+			isa = PBXGroup;
+			children = (
+				4F541BB92A9FB5220030912B /* SampleCode.xcconfig */,
+			);
+			path = Configuration;
+			sourceTree = "<group>";
+		};
+		4F541BBA2A9FB5220030912B /* LICENSE */ = {
+			isa = PBXGroup;
+			children = (
+				4F541BBB2A9FB5220030912B /* LICENSE.txt */,
+			);
+			path = LICENSE;
+			sourceTree = "<group>";
+		};
+		4F541BBC2A9FB5220030912B /* HIDKeyboardApp */ = {
+			isa = PBXGroup;
+			children = (
+				4F541BBD2A9FB5220030912B /* ViewController.swift */,
+				4F541BBE2A9FB5220030912B /* Assets.xcassets */,
+				4F541BBF2A9FB5220030912B /* Main.storyboard */,
+				4F541BC12A9FB5220030912B /* AppDelegate.swift */,
+				4F541BC22A9FB5220030912B /* HIDKeyboardApp.entitlements */,
+				4F541BC32A9FB5220030912B /* Info.plist */,
+			);
+			path = HIDKeyboardApp;
+			sourceTree = "<group>";
+		};
+		4F541BC42A9FB5220030912B /* HIDKeyboardDriver */ = {
+			isa = PBXGroup;
+			children = (
+				4F541BC52A9FB5220030912B /* HIDKeyboardDriver.iig */,
+				4F541BC62A9FB5220030912B /* HIDKeyboardDriver.cpp */,
+				4F541BC72A9FB5220030912B /* HIDKeyboardDriver.entitlements */,
+				4F541BC82A9FB5220030912B /* Info.plist */,
+			);
+			path = HIDKeyboardDriver;
+			sourceTree = "<group>";
+		};
+		4F541BCC2A9FB5220030912B /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				4F541BD12A9FB5220030912B /* HIDKeyboardApp.app */,
+				4F541BD32A9FB5220030912B /* com.example.apple-samplecode.KeyboardDriver221098.dext */,
+			);
+			name = Products;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -273,6 +374,12 @@
 			mainGroup = 4F3BF6152A9ECC4600F1790B;
 			productRefGroup = 4F3BF6202A9ECC4600F1790B /* Products */;
 			projectDirPath = "";
+			projectReferences = (
+				{
+					ProductGroup = 4F541BCC2A9FB5220030912B /* Products */;
+					ProjectRef = 4F541BCB2A9FB5220030912B /* HIDKeyboardDriver.xcodeproj */;
+				},
+			);
 			projectRoot = "";
 			targets = (
 				4F3BF62F2A9ECDE900F1790B /* gamepad-driver-app */,
@@ -281,6 +388,23 @@
 			);
 		};
 /* End PBXProject section */
+
+/* Begin PBXReferenceProxy section */
+		4F541BD12A9FB5220030912B /* HIDKeyboardApp.app */ = {
+			isa = PBXReferenceProxy;
+			fileType = wrapper.application;
+			path = HIDKeyboardApp.app;
+			remoteRef = 4F541BD02A9FB5220030912B /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
+		4F541BD32A9FB5220030912B /* com.example.apple-samplecode.KeyboardDriver221098.dext */ = {
+			isa = PBXReferenceProxy;
+			fileType = "wrapper.driver-extension";
+			path = "com.example.apple-samplecode.KeyboardDriver221098.dext";
+			remoteRef = 4F541BD22A9FB5220030912B /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
+/* End PBXReferenceProxy section */
 
 /* Begin PBXResourcesBuildPhase section */
 		4F3BF61D2A9ECC4600F1790B /* Resources */ = {
@@ -345,6 +469,17 @@
 			targetProxy = 4F3BF64E2A9ECE6900F1790B /* PBXContainerItemProxy */;
 		};
 /* End PBXTargetDependency section */
+
+/* Begin PBXVariantGroup section */
+		4F541BBF2A9FB5220030912B /* Main.storyboard */ = {
+			isa = PBXVariantGroup;
+			children = (
+				4F541BC02A9FB5220030912B /* Base */,
+			);
+			name = Main.storyboard;
+			sourceTree = "<group>";
+		};
+/* End PBXVariantGroup section */
 
 /* Begin XCBuildConfiguration section */
 		4F3BF6272A9ECC4600F1790B /* Debug */ = {
