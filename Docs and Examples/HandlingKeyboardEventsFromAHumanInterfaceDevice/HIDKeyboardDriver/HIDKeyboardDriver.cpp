@@ -244,9 +244,9 @@ void HIDKeyboardDriver::handleKeyboardReport(uint64_t timestamp,
         usage = element->getUsage();
 
         os_log(OS_LOG_DEFAULT,
-               "Dispatching key with ussagPage: 0x%02x usage: 0x%02x value: %d",
+               "Dispatching unmodified key with ussagPage: 0x%02x usage: 0x%02x value: %d",
                usagePage, usage, value);
-        dispatchKeyboardEvent(timestamp, usagePage, usage+1, value, 0, true);
+        dispatchKeyboardEvent(timestamp, usagePage, usage, value, 0, true);
     }
     
 exit:
