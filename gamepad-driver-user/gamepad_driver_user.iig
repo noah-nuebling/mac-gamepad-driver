@@ -10,13 +10,17 @@
 
 #include <Availability.h>
 #include <DriverKit/IOService.iig>
-//#include <HIDDriverKit/IOUserHIDDevice.iig>
+#include <HIDDriverKit/IOUserHIDDevice.iig>
 
-class gamepad_driver_user: public /*IOUserHIDDevice*/IOService {
+class gamepad_driver_user: public IOUserHIDDevice {
     
 public:
-    virtual kern_return_t
-    Start(IOService * provider) override;
+    virtual kern_return_t Start(IOService * provider) override;
+    virtual bool init(void) override;
+    virtual void free(void) override;
+    virtual kern_return_t handleReport(uint64_t timestamp, IOMemoryDescriptor* report, uint32_t reportLength, IOHIDReportType reportType, IOOptionBits options) override;
+
+    
 };
 
 #endif /* gamepad_driver_user_h */

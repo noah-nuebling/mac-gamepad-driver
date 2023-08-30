@@ -37,9 +37,11 @@ class ExtensionInstaller: NSObject, OSSystemExtensionRequestDelegate {
         
         print("Request needs action since there is an existing extension. Existing: \(existing) – extension: \(ext) – request: \(request)")
         
-        print("...Returning action 'cancel'")
         
-        return .cancel
+        let action = OSSystemExtensionRequest.ReplacementAction.replace
+        
+        print("...Returning action '\(action)'")
+        return action
     }
     
     func requestNeedsUserApproval(_ request: OSSystemExtensionRequest) {

@@ -10,6 +10,10 @@
 - Apple Game Controller Backward Compatibility: (They simulate Xbox 360 Controller) https://developer.apple.com/documentation/gamecontroller/understanding_game_controller_backward_compatibility
     - They provide and interface which sends Xbox 360 controller reports
 
+## Examples
+
+- HIDKeyboardDriver sample project: https://developer.apple.com/documentation/hiddriverkit/handling_keyboard_events_from_a_human_interface_device
+
 ## Other
 
 - IOUserHIDDevice: https://developer.apple.com/documentation/hiddriverkit/iouserhiddevice

@@ -30,8 +30,6 @@
 			<string>$(PRODUCT_BUNDLE_IDENTIFIER)</string>
 			<key>CFBundleIdentifier</key>
 			<string>$(PRODUCT_BUNDLE_IDENTIFIER)</string>
-			<key>USB Product Name</key>
-			<string>@Play Wired Controller for Xbox One</string>
 		</dict>
 	</dict>
 </dict>
