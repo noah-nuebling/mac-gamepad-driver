@@ -13,6 +13,7 @@
 ## Examples
 
 - HIDKeyboardDriver sample project: https://developer.apple.com/documentation/hiddriverkit/handling_keyboard_events_from_a_human_interface_device
+- Karabiner IOUserHIDDevice subclass: https://github.com/pqrs-org/Karabiner-DriverKit-VirtualHIDDevice/blob/main/src/DriverKit/Karabiner-DriverKit-VirtualHIDDevice/org_pqrs_Karabiner_DriverKit_VirtualHIDPointing.iig
 
 ## Other
 

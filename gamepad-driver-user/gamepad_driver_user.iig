@@ -15,12 +15,26 @@
 class gamepad_driver_user: public IOUserHIDDevice {
     
 public:
-    virtual kern_return_t Start(IOService * provider) override;
     virtual bool init(void) override;
     virtual void free(void) override;
-    virtual kern_return_t handleReport(uint64_t timestamp, IOMemoryDescriptor* report, uint32_t reportLength, IOHIDReportType reportType, IOOptionBits options) override;
-
+//    virtual kern_return_t Start(IOService * provider) override;
     
+    /// IOUserHIDDevice
+    virtual bool handleStart(IOService *provider) override;
+        
+    virtual OSDictionary *newDeviceDescription(void) override;
+    virtual OSData *newReportDescriptor(void) override;
+    
+    /// IOHIDDevice
+    virtual kern_return_t handleReport(uint64_t timestamp, IOMemoryDescriptor* report, uint32_t reportLength, IOHIDReportType reportType, IOOptionBits options) override;
+//    virtual kern_return_t getReport(IOMemoryDescriptor *report, IOHIDReportType reportType, IOOptionBits options, uint32_t completionTimeout, OSAction *action) override;
+//    virtual kern_return_t setReport(IOMemoryDescriptor *report, IOHIDReportType reportType, IOOptionBits options, uint32_t completionTimeout, OSAction *action) override;
+////    virtual void CompleteReport(OSAction *action, IOReturn status, uint32_t actualByteCount) override;
+//    virtual void setProperty(OSObject *key, OSObject *value) override;
+    
+    
+    /// Weird compiler errors
+//    virtual kern_return_t _Dispatch(void *self, const IORPC rpc) override;
 };
 
 #endif /* gamepad_driver_user_h */

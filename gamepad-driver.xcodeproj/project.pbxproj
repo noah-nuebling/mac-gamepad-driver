@@ -153,8 +153,8 @@
 		4F3BF6482A9ECE6900F1790B /* gamepad-driver-user */ = {
 			isa = PBXGroup;
 			children = (
-				4F3BF6492A9ECE6900F1790B /* gamepad_driver_user.cpp */,
 				4F3BF64B2A9ECE6900F1790B /* gamepad_driver_user.iig */,
+				4F3BF6492A9ECE6900F1790B /* gamepad_driver_user.cpp */,
 				4F3BF64D2A9ECE6900F1790B /* Info.plist */,
 				4F3BF6552A9ED2C000F1790B /* Notes.md */,
 			);
