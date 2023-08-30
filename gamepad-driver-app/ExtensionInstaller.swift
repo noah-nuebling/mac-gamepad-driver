@@ -16,7 +16,10 @@ class ExtensionInstaller: NSObject, OSSystemExtensionRequestDelegate {
     func install() {
         /// Install Driver Kit Extension.
         /// Src: https://developer.apple.com/documentation/systemextensions/installing_system_extensions_and_drivers
-        ///
+        
+        /// Log
+        print("Requesting Extension install")
+        
         /// Create an activation request and assign a delegate to
         /// receive reports of success or failure.
         

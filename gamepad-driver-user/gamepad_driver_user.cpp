@@ -44,6 +44,8 @@ bool gamepad_driver_user::init() {
     /// Allocates memory for ivars struct
     /// And assigns allocated memory to inherited `ivars` variable. I think all drivers need to do it like that.
     
+    os_log(OS_LOG_DEFAULT, "Hello Worldddd");
+    
     if (!super::init()) {
         return false;
     }
@@ -92,7 +94,6 @@ kern_return_t IMPL(gamepad_driver_user, Start) {
 
 /// --- IOHIDDevice ---
 
-/*
 kern_return_t gamepad_driver_user::handleReport(uint64_t timestamp, IOMemoryDescriptor* report, uint32_t reportLength, IOHIDReportType reportType, IOOptionBits options) {
     
     
@@ -101,7 +102,7 @@ kern_return_t gamepad_driver_user::handleReport(uint64_t timestamp, IOMemoryDesc
     return KERN_SUCCESS;
 }
 
-
+/*
 kern_return_t gamepad_driver_user::getReport(IOMemoryDescriptor *report, IOHIDReportType reportType, IOOptionBits options, uint32_t completionTimeout, OSAction *action) {
 
     return KERN_SUCCESS;
