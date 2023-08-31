@@ -46,15 +46,10 @@ namespace Controller {
 
 struct gamepad_driver_user_IVars {
     
-    OSArray *elements;
-    struct {
-        OSArray *elements;
-    } keyboard;
+    IOUSBHostPipe *inPipe;
+    IOUSBHostPipe *outPipe;
+    IOBufferMemoryDescriptor *inBuffer; /// Note: Why store inBuffer here but not outBuffer?
 };
-
-#define _elements   ivars->elements
-#define _keyboard   ivars->keyboard
-
 
 bool gamepad_driver_user::init() {
     
@@ -84,12 +79,16 @@ void gamepad_driver_user::free() {
     
     os_log(OS_LOG_DEFAULT, "Groot: Free");
     
+    /// Release ivars
     if (ivars) {
-        OSSafeReleaseNULL(_elements);
-        OSSafeReleaseNULL(_keyboard.elements);
+        OSSafeReleaseNULL(ivars->inPipe);
+        OSSafeReleaseNULL(ivars->outPipe);
     }
     
+    /// Free ivars struct
     IOSafeDeleteNULL(ivars, gamepad_driver_user_IVars, 1);
+    
+    /// Call super
     super::free();
 }
 
@@ -214,8 +213,8 @@ kern_return_t IMPL(gamepad_driver_user, Start) {
         
         /// Iterate over endpoints and create inPipe and outPipe
         
-        IOUSBHostPipe *inPipe = NULL;
-        IOUSBHostPipe *outPipe = NULL;
+        ivars->inPipe = NULL;
+        ivars->outPipe = NULL;
         const IOUSBEndpointDescriptor *inDescriptor = NULL;
         const IOUSBEndpointDescriptor *outDescriptor = NULL;
         
@@ -235,7 +234,7 @@ kern_return_t IMPL(gamepad_driver_user, Start) {
             /// We're emulatirng the 360Controller logic here. Since the APIs are different now we have to do wacky stuff like `bEndpointAddress >> 7` Maybe we should use different APIs or different logic instead of this bitshifting stuff.
             /// See USB 2.0 spec section 9.6.6. for context on the bitshifting stuff
             
-            if (inPipe == NULL) {
+            if (ivars->inPipe == NULL) {
                 
                 bool isIn = (endpointDescriptor->bEndpointAddress & (1 << 7)) != 0;
                 bool isInterrupt = (endpointDescriptor->bmAttributes & (1 << 0)) && (endpointDescriptor->bmAttributes & (1 << 1));
@@ -249,7 +248,7 @@ kern_return_t IMPL(gamepad_driver_user, Start) {
                     /// Create inPipe
                     /// TODO: "Caller MUST release pipe"
                     inDescriptor = endpointDescriptor;
-                    ret = controllerInterface->CopyPipe(endpointDescriptor->bEndpointAddress, &inPipe);
+                    ret = controllerInterface->CopyPipe(endpointDescriptor->bEndpointAddress, &ivars->inPipe);
                     if (ret != kIOReturnSuccess) {
                         os_log(OS_LOG_DEFAULT, "Start - Failed to copy potential input pipe. Carrying on.");
                     }
@@ -258,7 +257,7 @@ kern_return_t IMPL(gamepad_driver_user, Start) {
             
             /// Try to create output pipe from endpoint
             
-            if (outPipe == NULL) {
+            if (ivars->outPipe == NULL) {
                 
                 bool isOut = (endpointDescriptor->bEndpointAddress & (1 << 7)) == 0;
                 bool isInterrupt = (endpointDescriptor->bmAttributes & (1 << 0)) && (endpointDescriptor->bmAttributes & (1 << 1));
@@ -272,7 +271,7 @@ kern_return_t IMPL(gamepad_driver_user, Start) {
                     /// Create outPipe
                     /// TODO: "Caller MUST release pipe"
                     outDescriptor = endpointDescriptor;
-                    ret = controllerInterface->CopyPipe(endpointDescriptor->bEndpointAddress, &outPipe);
+                    ret = controllerInterface->CopyPipe(endpointDescriptor->bEndpointAddress, &ivars->outPipe);
                     if (ret != kIOReturnSuccess) {
                         os_log(OS_LOG_DEFAULT, "Start - Failed to copy potential output pipe. Carrying on.");
                     }
@@ -280,7 +279,7 @@ kern_return_t IMPL(gamepad_driver_user, Start) {
             }
             
             /// Break if both pipes are found
-            if (inPipe != NULL && outPipe != NULL) {
+            if (ivars->inPipe != NULL && ivars->outPipe != NULL) {
                 break;
             }
         }
@@ -292,11 +291,11 @@ kern_return_t IMPL(gamepad_driver_user, Start) {
         }
         
         /// Guard pipe creation success
-        if (inPipe == NULL) {
+        if (ivars->inPipe == NULL) {
             os_log(OS_LOG_DEFAULT, "Start - Input pipe couldn't be created.");
             goto fail;
         }
-        if (outPipe == NULL) {
+        if (ivars->outPipe == NULL) {
             os_log(OS_LOG_DEFAULT, "Start - Output pipe couldn't be created.");
             goto fail;
         }
@@ -315,8 +314,8 @@ kern_return_t IMPL(gamepad_driver_user, Start) {
         /// Create buffer for input endpoint
         /// Notes:
         /// - We're passing 1 for the alignment param. The docs say 0 is the default, but the corresponding method which 360Controller uses (IOBufferMemoryDescriptor::inTaskWithOptions) has 1 as the default value. This is confusing. Not sure whether to pass 0 or 1.
-        IOBufferMemoryDescriptor *inBuffer = NULL;
-        ret = IOBufferMemoryDescriptor::Create(kIOMemoryDirectionIn, inMaxPacketSize, 1, &inBuffer);
+        ivars->inBuffer = NULL;
+        ret = IOBufferMemoryDescriptor::Create(kIOMemoryDirectionIn, inMaxPacketSize, 1, &ivars->inBuffer);
         if (ret != kIOReturnSuccess) {
             os_log(OS_LOG_DEFAULT, "Start - Failed to create buffer for input endpoint");
         }
@@ -325,7 +324,7 @@ kern_return_t IMPL(gamepad_driver_user, Start) {
         /// ....
         
         /// Begin polling input
-        bool success = true; //QueueRead();
+        bool success = QueueRead();
         if (!success) {
             os_log(OS_LOG_DEFAULT, "Start - Failed to Start reading from device");
             goto fail;
@@ -340,10 +339,10 @@ kern_return_t IMPL(gamepad_driver_user, Start) {
                 0x1D, 0x1D, 0xFF, 0x00, 0x00 };
             uint8_t xoneInit3[] = { 0x09, 0x00, 0x00, 0x09, 0x00, 0x0F, 0x00, 0x00,
                 0x00, 0x00, 0x00, 0x00, 0x00 };
-//            QueueWrite(&xoneInit0, sizeof(xoneInit0));
-//            QueueWrite(&xoneInit1, sizeof(xoneInit1));
-//            QueueWrite(&xoneInit2, sizeof(xoneInit2));
-//            QueueWrite(&xoneInit3, sizeof(xoneInit3));
+            QueueWrite(&xoneInit0, sizeof(xoneInit0));
+            QueueWrite(&xoneInit1, sizeof(xoneInit1));
+            QueueWrite(&xoneInit2, sizeof(xoneInit2));
+            QueueWrite(&xoneInit3, sizeof(xoneInit3));
         } else if (controller == Controller::Xbox360 || controller == Controller::Xbox360Pretend360 || controller == Controller::XboxOriginal) {
             
             /// Disable LED
@@ -398,21 +397,62 @@ kern_return_t IMPL(gamepad_driver_user, Stop) {
 bool gamepad_driver_user::QueueRead(void) {
     
 //    IOUSBCompletion complete;
-//    IOReturn err;
-//
-//    if ((inPipe == NULL) || (inBuffer == NULL))
-//        return false;
-//    complete.target=this;
-//    complete.action=ReadCompleteInternal;
-//    complete.parameter=inBuffer;
-//    err=inPipe->Read(inBuffer,0,0,inBuffer->getLength(),&complete);
-//    if(err==kIOReturnSuccess) return true;
-//    else {
-//        IOLog("read - failed to start (0x%.8x)\n",err);
-//        return false;
-//    }
-    return false;
+
+
+
+    /// Declare return
+    IOReturn ret;
+
+    /// Define constants
+    /// Docs "You must specify 0 when transferring data on an interrupt endpoint"
+    uint32_t timeoutMs = 0;
+    
+    if (ivars->inPipe == NULL || ivars->inBuffer == NULL) {
+        os_log(OS_LOG_DEFAULT, "Read - inPipe or inBuffer unavailable");
+        return false;
+    }
+    
+//    complete.target = this;
+//    complete.action = ReadCompleteInternal;
+//    complete.parameter = inBuffer;
+//    ret = inPipe->Read(inBuffer, 0 ,0 , inBuffer->getLength(), &complete);
+    
+    /// Get inBuffer length
+    uint64_t inBufferLength;
+    ret = ivars->inBuffer->GetLength(&inBufferLength);
+    if (ret != kIOReturnSuccess) {
+        os_log(OS_LOG_DEFAULT, "Read - Failed to get inBuffer length.");
+        return false;
+    }
+    
+    /// Create OSAction
+    /// The only docs of how this works I found in OSAction.iig: https://newosxbook.com/src.jl?tree=xnu&file=/iokit/DriverKit/OSAction.iig
+    size_t referenceSize = 0;
+    OSAction *action;
+    ret = CreateActionReadComplete(referenceSize, &action);
+    if (ret != kIOReturnSuccess) {
+        os_log(OS_LOG_DEFAULT, "Read - Failed to create action");
+        return false;
+    }
+
+    /// Schedule async read
+    ret = ivars->inPipe->AsyncIO(ivars->inBuffer, (uint32_t)inBufferLength, action, timeoutMs);
+    if (ret != kIOReturnSuccess) {
+        os_log(OS_LOG_DEFAULT, "Read - Failed to read. Code %d, inBufferIsNull: %d, inBufferLength: %d, actionIsNull: %d, timeout: %d", ret, ivars->inBuffer == NULL, (uint32_t)inBufferLength, action == NULL, timeoutMs);
+        return false;
+    }
+    
+    /// Cleanup
+    /// Note: We should do this also when the method fails at any point to prevent leaks
+    OSSafeReleaseNULL(action);
+    
+    /// Return success
+    return true;
 }
+
+void IMPL(gamepad_driver_user, ReadComplete) {
+    os_log(OS_LOG_DEFAULT, "Read - Received data. Status %d bytecount: %d, timestamp: %llu", status, actualByteCount, completionTimestamp);
+};
 
 bool gamepad_driver_user::QueueWrite(const void *bytes, uint32_t length) {
     
@@ -429,13 +469,13 @@ bool gamepad_driver_user::QueueWrite(const void *bytes, uint32_t length) {
 //    complete.target=this;
 //    complete.action=WriteCompleteInternal;
 //    complete.parameter=outBuffer;
-//    err=outPipe->Write(outBuffer,0,0,length,&complete);
+//    err = outPipe->Write(outBuffer,0,0,length,&complete);
 //    if(err==kIOReturnSuccess) return true;
 //    else {
 //        IOLog("send - failed to start (0x%.8x)\n",err);
 //        return false;
 //    }
-    return false;
+    return true;
 }
 
 /// --- IOHIDDevice ---

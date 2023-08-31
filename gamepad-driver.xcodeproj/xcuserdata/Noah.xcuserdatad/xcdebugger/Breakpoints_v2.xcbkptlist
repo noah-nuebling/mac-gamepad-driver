@@ -14,8 +14,8 @@
             filePath = "gamepad-driver-user/gamepad_driver_user.cpp"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "108"
-            endingLineNumber = "108"
+            startingLineNumber = "107"
+            endingLineNumber = "107"
             landmarkName = "IMPL()"
             landmarkType = "9">
          </BreakpointContent>
@@ -30,8 +30,8 @@
             filePath = "gamepad-driver-user/gamepad_driver_user.cpp"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "417"
-            endingLineNumber = "417"
+            startingLineNumber = "457"
+            endingLineNumber = "457"
             landmarkName = "gamepad_driver_user::QueueWrite(bytes, length)"
             landmarkType = "7">
          </BreakpointContent>
