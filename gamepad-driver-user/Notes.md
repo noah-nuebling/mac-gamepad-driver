@@ -24,6 +24,7 @@ Demystifying code signing for DriverKit: https://developer.apple.com/news/?id=c6
 - 360Controller impl: https://github.com/360Controller/360Controller/blob/master/360Controller/Controller.cpp
 - Gamepad Tester: https://hardwaretester.com/gamepad
 - Make sure you add the capabilites (aka entitlements?) for the driver to the app identifier under https://developer.apple.com/account/resources/identifiers/
+- Microsoft explanation of USB Device Layout (Configuration > Interfaces > Endpoints > Pipes): https://learn.microsoft.com/en-us/windows-hardware/drivers/usbcon/usb-endpoints-and-their-pipes
 
 ## Debugging
 

@@ -19,8 +19,8 @@ public:
     /// IOService Lifecycle
     virtual bool init(void) override;
     virtual void free(void) override;
-//    virtual kern_return_t Start(IOService *provider) override;
-//    virtual kern_return_t Stop(IOService *provider) override;
+    virtual kern_return_t Start(IOService *provider) override;
+    virtual kern_return_t Stop(IOService *provider) override;
         
 };
 

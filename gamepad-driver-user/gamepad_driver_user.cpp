@@ -18,12 +18,30 @@
 
 #include <DriverKit/OSCollections.h>
 #include <HIDDriverKit/HIDDriverKit.h>
+#include <USBDriverKit/IOUSBHostDevice.h>
+#include <USBDriverKit/AppleUSBDescriptorParsing.h>
+
+/// Other Imports
+#include <cassert>
 
 /// Import Header
 #include "gamepad_driver_user.h"
 
+/// MARK: --- Declarations ---
 
-/// --- Lifecycle and iVars ---
+namespace Controller {
+    enum Type {
+        /// This is copied from 360Controller
+        Xbox360 = 0,
+        XboxOriginal = 1,
+        XboxOne = 2,
+        XboxOnePretend360 = 3,
+        Xbox360Pretend360 = 4,
+        unknown = 5,
+    };
+}
+
+/// MARK: --- Lifecycle and iVars ---
 /// This is mostly copied from the HIDKeyboardDriver sample project
 
 struct gamepad_driver_user_IVars {
@@ -44,7 +62,7 @@ bool gamepad_driver_user::init() {
     /// Allocates memory for ivars struct
     /// And assigns allocated memory to inherited `ivars` variable. I think all drivers need to do it like that.
     
-    os_log(OS_LOG_DEFAULT, "Groot: Init");
+    os_log(OS_LOG_DEFAULT, "Groot: Hoot Hoot");
     
     if (!super::init()) {
         return false;
@@ -75,42 +93,242 @@ void gamepad_driver_user::free() {
     super::free();
 }
 
-//kern_return_t IMPL(gamepad_driver_user, Start) {
-//    
-//    /// Declare vars
-//    kern_return_t ret;
-//    
-//    /// Call super
-//    ret = Start(provider, SUPERDISPATCH);
-//    if (ret != kIOReturnSuccess) goto fail;
-//    
-//    /// Register self with system
-//    ret = RegisterService();
-//    if (ret != kIOReturnSuccess) goto fail;
-//    
-//    /// Validate
-//    assert(ret == kIOReturnSuccess);
-//    
-//    /// Log
-//    os_log(OS_LOG_DEFAULT, "Groot: Start");
-//    
-//    /// Return success
-//    return ret;
-//    
-//    /// Handle failed start
-//fail:
-//    os_log(OS_LOG_DEFAULT, "Groot: Failed to start");
-//    Stop(provider, SUPERDISPATCH);
-//    return ret;
-//}
-//
-//kern_return_t IMPL(gamepad_driver_user, Stop) {
-//    
-//    /// Initial implementation copied from Karabiner https://github.com/pqrs-org/Karabiner-DriverKit-VirtualHIDDevice/blob/151fefd3f5cdbe00874bd4c25cde0ded9665878f/src/DriverKit/Karabiner-DriverKit-VirtualHIDDevice/org_pqrs_Karabiner_DriverKit_VirtualHIDPointing.cpp#L130C1-L137C1
-//    
-//    os_log(OS_LOG_DEFAULT, "Groot: Stop");
-//    return Stop(provider, SUPERDISPATCH);
-//}
+kern_return_t IMPL(gamepad_driver_user, Start) {
+    
+    /// Notes:
+    /// - When something failed here, the 360Controller implementation used to set the `device` variable to NULL and then call ReleaseAll(). I don't know why. I don't think this is necessary here, since we're freeing (that's the same as releasing in this case right?) everything in free(). If we do need to release stuff when Start fails, we should probably do it in Stop().
+    /// - Wrapping everything in { } to prevent weird cpp compiler errors with the goto fail statements.
+    
+    {
+        /// Declare return
+        kern_return_t ret = kIOReturnSuccess;
+        
+        /// Get device
+        ///   Note: Don't know what the 'Host' prefix stands for. Older code I saw uses IOUSBDevice instead of IOUSBHostDevice
+        IOUSBHostDevice *device = OSDynamicCast(IOUSBHostDevice, provider);
+        if (device == NULL) {
+            os_log(OS_LOG_DEFAULT, "Start - Invalid provider");
+            goto fail;
+        }
+        
+        /// Get configuration descriptor
+        uint8_t index = 0;
+        const IOUSBConfigurationDescriptor *configurationDescriptor = device->CopyConfigurationDescriptor(index);
+        if (configurationDescriptor == NULL) {
+            os_log(OS_LOG_DEFAULT, "Start - No configuration descriptor available");
+            goto fail;
+        }
+        
+        /// Open device
+        ret = device->Open(this, 0, NULL);
+        if (ret != kIOReturnSuccess) {
+            os_log(OS_LOG_DEFAULT, "Start - Unable to open device");
+            goto fail;
+        }
+        
+        /// Set Configuration
+        /// Note: No idea what we're doing here. Copied this from 360Controller
+        ret = device->SetConfiguration(configurationDescriptor->bConfigurationValue, true);
+        if (ret != kIOReturnSuccess) {
+            os_log(OS_LOG_DEFAULT, "Start - Unable to set configuration");
+            goto fail;
+        }
+        
+        /// Find interface
+        ///     And determine controller type
+        ///     360Controller uses old IOUSBDevice->FindNextInterface API. There the desired interface class and subclass are specified as integers. I don't know how to translate this to the modern implementation.
+        
+        Controller::Type controller = Controller::unknown;
+        IOUSBHostInterface *controllerInterface = NULL;
+        const IOUSBInterfaceDescriptor *controllerInterfaceDescriptor = NULL;
+        
+        /// Create iterator
+        uintptr_t iterator;
+        ret = device->CreateInterfaceIterator(&iterator);
+        if (ret != kIOReturnSuccess) {
+            os_log(OS_LOG_DEFAULT, "Start - Failed to create interface iterator");
+        }
+        
+        /// Iterate
+        /// Notes:
+        /// - Why do we need to pass in the configurationDesc for GetInterfaceDescriptor()? I though the interfaces belong to a configuration anyways so why specify it?
+        while (true) {
+            
+            /// Get next interface from iterator
+            IOUSBHostInterface *interface;
+            ret = device->CopyInterface(iterator, &interface);
+            if (ret != kIOReturnSuccess) {
+                os_log(OS_LOG_DEFAULT, "Start - Failed to copy an interface. Carrying on.");
+            }
+            
+            /// Break if iterator finished
+            if (interface == NULL) {
+                break;
+            }
+            
+            /// Get interface descriptor
+            const IOUSBInterfaceDescriptor *interfaceDescriptor = interface->GetInterfaceDescriptor(configurationDescriptor);
+            
+            /// Check if interface is for known controller
+            
+            controller = Controller::unknown;
+            
+            if (interfaceDescriptor->bInterfaceSubClass == 93
+                && interfaceDescriptor->bInterfaceProtocol == 1) {
+                
+                controller = Controller::Xbox360;
+                
+            } else if (interfaceDescriptor->bInterfaceSubClass == 66
+                       && interfaceDescriptor->bInterfaceProtocol == 0) {
+                
+                controller = Controller::XboxOriginal;
+                
+            } else if (interfaceDescriptor->bInterfaceClass == 255
+                       && interfaceDescriptor->bInterfaceSubClass == 71
+                       && interfaceDescriptor->bInterfaceProtocol == 208) {
+                
+                controller = Controller::XboxOne;
+                
+            }
+            
+            /// Assign result and break if known controller interface was found
+            if (controller != Controller::unknown) {
+                controllerInterface = interface;
+                controllerInterfaceDescriptor = interfaceDescriptor;
+                break;
+            }
+        }
+        
+        /// Guard no interface found
+        if (controllerInterface == NULL) {
+            os_log(OS_LOG_DEFAULT, "Start - Unable to find controller interface");
+            goto fail;
+        }
+        
+        /// Log interface found
+        os_log(OS_LOG_DEFAULT, "Start - Interface found! For controller of type %d", controller);
+        
+        /// Open interface
+        /// NOTE: Not totally sure about the params here
+        controllerInterface->Open(this, 0, NULL);
+        
+        /// Iterate over endpoints and create inPipe and outPipe
+        
+        IOUSBHostPipe *inPipe = NULL;
+        IOUSBHostPipe *outPipe = NULL;
+        
+        const IOUSBEndpointDescriptor *endpointDescriptor = NULL;
+        
+        while (true) {
+            
+            /// Get next endpoint descriptor from iterator
+            endpointDescriptor = IOUSBGetNextEndpointDescriptor(configurationDescriptor, controllerInterfaceDescriptor, (IOUSBDescriptorHeader *)endpointDescriptor);
+            
+            /// Break if iterator empty
+            if (endpointDescriptor == NULL) {
+                break;
+            }
+            
+            /// Try to create input pipe from endpoint
+            /// We're emulatirng the 360Controller logic here. Since the APIs are different now we have to do wacky stuff like `bEndpointAddress >> 7` Maybe we should use different APIs or different logic instead of this bitshifting stuff.
+            /// See USB 2.0 spec section 9.6.6. for context on the bitshifting stuff
+            
+            if (inPipe == NULL) {
+                
+                bool isIn = (endpointDescriptor->bEndpointAddress & (1 << 7)) != 0;
+                bool isInterrupt = (endpointDescriptor->bmAttributes & (1 << 0)) && (endpointDescriptor->bmAttributes & (1 << 1));
+                uint8_t interval = endpointDescriptor->bInterval;
+                uint16_t maxPacketSize = endpointDescriptor->wMaxPacketSize;
+                
+                os_log(OS_LOG_DEFAULT, "Start - Considering endpoint with attributes --- %d --- isIn: %d isInterrupt: %d interval: %d maxPacketSize: %d", endpointDescriptor->bmAttributes, isIn, isInterrupt, interval, maxPacketSize);
+                
+                if (isIn && isInterrupt) {
+                    
+                    /// Create inPipe
+                    /// TODO: "Caller MUST release pipe"
+                    ret = controllerInterface->CopyPipe(endpointDescriptor->bEndpointAddress, &inPipe);
+                    if (ret != kIOReturnSuccess) {
+                        os_log(OS_LOG_DEFAULT, "Start - Failed to copy potential input pipe. Carrying on.");
+                    }
+                }
+            }
+            
+            /// Try to create output pipe from endpoint
+            
+            if (outPipe == NULL) {
+                
+                bool isOut = (endpointDescriptor->bEndpointAddress & (1 << 7)) == 0;
+                bool isInterrupt = (endpointDescriptor->bmAttributes & (1 << 0)) && (endpointDescriptor->bmAttributes & (1 << 1));
+                uint8_t interval = endpointDescriptor->bInterval;
+                uint16_t maxPacketSize = endpointDescriptor->wMaxPacketSize;
+                
+                os_log(OS_LOG_DEFAULT, "Start - Considering endpoint with attributes --- %d --- isOut: %d isInterrupt: %d interval: %d maxPacketSize: %d", endpointDescriptor->bmAttributes, isOut, isInterrupt, interval, maxPacketSize);
+                
+                if (isOut && isInterrupt) {
+                    
+                    /// Create outPipe
+                    /// TODO: "Caller MUST release pipe"
+                    ret = controllerInterface->CopyPipe(endpointDescriptor->bEndpointAddress, &outPipe);
+                    if (ret != kIOReturnSuccess) {
+                        os_log(OS_LOG_DEFAULT, "Start - Failed to copy potential output pipe. Carrying on.");
+                    }
+                }
+            }
+            
+            /// Break if both pipes are found
+            if (inPipe != NULL && outPipe != NULL) {
+                break;
+            }
+        }
+        
+        /// Guard pipe creation
+        if (inPipe == NULL) {
+            os_log(OS_LOG_DEFAULT, "Start - Input pipe couldn't be created.");
+            goto fail;
+        }
+        if (outPipe == NULL) {
+            os_log(OS_LOG_DEFAULT, "Start - Output pipe couldn't be created.");
+            goto fail;
+        }
+        
+        
+        /// Destroy iterator
+        ret = device->DestroyInterfaceIterator(iterator);
+        if (ret != kIOReturnSuccess) {
+            os_log(OS_LOG_DEFAULT, "Start - Failed to destroy interface iterator. Carrying on.");
+        }
+        
+        /// Call super
+        ret = Start(provider, SUPERDISPATCH);
+        if (ret != kIOReturnSuccess) goto fail;
+        
+        /// Register self with system
+        ret = RegisterService();
+        if (ret != kIOReturnSuccess) goto fail;
+        
+        /// Validate
+        assert(ret == kIOReturnSuccess);
+        
+        /// Return & log success
+        os_log(OS_LOG_DEFAULT, "Groot: Start");
+        return ret;
+        
+    }
+    
+    /// Handle failed start
+fail:
+    os_log(OS_LOG_DEFAULT, "Groot: Failed to start");
+    Stop(provider, SUPERDISPATCH);
+    return kIOReturnError;
+}
+
+kern_return_t IMPL(gamepad_driver_user, Stop) {
+    
+    /// Initial implementation copied from Karabiner https://github.com/pqrs-org/Karabiner-DriverKit-VirtualHIDDevice/blob/151fefd3f5cdbe00874bd4c25cde0ded9665878f/src/DriverKit/Karabiner-DriverKit-VirtualHIDDevice/org_pqrs_Karabiner_DriverKit_VirtualHIDPointing.cpp#L130C1-L137C1
+    
+    os_log(OS_LOG_DEFAULT, "Groot: Stop");
+    return Stop(provider, SUPERDISPATCH);
+}
 
 
 /// --- IOHIDDevice ---
