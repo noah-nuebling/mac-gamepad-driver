@@ -9,8 +9,9 @@
 #define gamepad_driver_user_h
 
 #include <Availability.h>
-#include <DriverKit/IOService.iig>
-#include <HIDDriverKit/IOUserHIDDevice.iig>
+#include <DriverKit/DriverKit.h>
+#include <DriverKit/IOService.h>
+#include <HIDDriverKit/IOUserHIDDevice.h>
 
 class gamepad_driver_user: public IOService {
     
@@ -21,6 +22,11 @@ public:
     virtual void free(void) override;
     virtual kern_return_t Start(IOService *provider) override;
     virtual kern_return_t Stop(IOService *provider) override;
+    
+    /// Read & Write
+    bool QueueRead(void);
+    bool QueueWrite(const void *bytes, uint32_t length);
+    
         
 };
 

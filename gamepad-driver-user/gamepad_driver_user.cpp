@@ -101,7 +101,7 @@ kern_return_t IMPL(gamepad_driver_user, Start) {
     
     {
         /// Declare return
-        kern_return_t ret = kIOReturnSuccess;
+        IOReturn ret = kIOReturnSuccess;
         
         /// Get device
         ///   Note: Don't know what the 'Host' prefix stands for. Older code I saw uses IOUSBDevice instead of IOUSBHostDevice
@@ -216,6 +216,8 @@ kern_return_t IMPL(gamepad_driver_user, Start) {
         
         IOUSBHostPipe *inPipe = NULL;
         IOUSBHostPipe *outPipe = NULL;
+        const IOUSBEndpointDescriptor *inDescriptor = NULL;
+        const IOUSBEndpointDescriptor *outDescriptor = NULL;
         
         const IOUSBEndpointDescriptor *endpointDescriptor = NULL;
         
@@ -246,6 +248,7 @@ kern_return_t IMPL(gamepad_driver_user, Start) {
                     
                     /// Create inPipe
                     /// TODO: "Caller MUST release pipe"
+                    inDescriptor = endpointDescriptor;
                     ret = controllerInterface->CopyPipe(endpointDescriptor->bEndpointAddress, &inPipe);
                     if (ret != kIOReturnSuccess) {
                         os_log(OS_LOG_DEFAULT, "Start - Failed to copy potential input pipe. Carrying on.");
@@ -268,6 +271,7 @@ kern_return_t IMPL(gamepad_driver_user, Start) {
                     
                     /// Create outPipe
                     /// TODO: "Caller MUST release pipe"
+                    outDescriptor = endpointDescriptor;
                     ret = controllerInterface->CopyPipe(endpointDescriptor->bEndpointAddress, &outPipe);
                     if (ret != kIOReturnSuccess) {
                         os_log(OS_LOG_DEFAULT, "Start - Failed to copy potential output pipe. Carrying on.");
@@ -281,7 +285,13 @@ kern_return_t IMPL(gamepad_driver_user, Start) {
             }
         }
         
-        /// Guard pipe creation
+        /// Destroy iterator
+        ret = device->DestroyInterfaceIterator(iterator);
+        if (ret != kIOReturnSuccess) {
+            os_log(OS_LOG_DEFAULT, "Start - Failed to destroy interface iterator. Carrying on.");
+        }
+        
+        /// Guard pipe creation success
         if (inPipe == NULL) {
             os_log(OS_LOG_DEFAULT, "Start - Input pipe couldn't be created.");
             goto fail;
@@ -291,12 +301,65 @@ kern_return_t IMPL(gamepad_driver_user, Start) {
             goto fail;
         }
         
-        
-        /// Destroy iterator
-        ret = device->DestroyInterfaceIterator(iterator);
+        /// Get Device speed
+        uint8_t deviceSpeed;
+        ret = device->GetSpeed(&deviceSpeed);
         if (ret != kIOReturnSuccess) {
-            os_log(OS_LOG_DEFAULT, "Start - Failed to destroy interface iterator. Carrying on.");
+            os_log(OS_LOG_DEFAULT, "Start - Failed to get device speed");
+            goto fail;
         }
+        
+        /// Get maxPacketSize for input endpoint
+        uint16_t inMaxPacketSize = IOUSBGetEndpointMaxPacketSize(deviceSpeed, inDescriptor);
+        
+        /// Create buffer for input endpoint
+        /// Notes:
+        /// - We're passing 1 for the alignment param. The docs say 0 is the default, but the corresponding method which 360Controller uses (IOBufferMemoryDescriptor::inTaskWithOptions) has 1 as the default value. This is confusing. Not sure whether to pass 0 or 1.
+        IOBufferMemoryDescriptor *inBuffer = NULL;
+        ret = IOBufferMemoryDescriptor::Create(kIOMemoryDirectionIn, inMaxPacketSize, 1, &inBuffer);
+        if (ret != kIOReturnSuccess) {
+            os_log(OS_LOG_DEFAULT, "Start - Failed to create buffer for input endpoint");
+        }
+        
+        /// Skipping Chatpad stuff from 360Controller
+        /// ....
+        
+        /// Begin polling input
+        bool success = true; //QueueRead();
+        if (!success) {
+            os_log(OS_LOG_DEFAULT, "Start - Failed to Start reading from device");
+            goto fail;
+        }
+        
+        /// Send initialization messages to Xbox One Controller
+        /// Note: No idea what this does. Copied from 360Controller
+        if (controller == Controller::XboxOne || controller == Controller::XboxOnePretend360) {
+            uint8_t xoneInit0[] = { 0x01, 0x20, 0x00, 0x09, 0x00, 0x04, 0x20, 0x3a, 0x00, 0x00, 0x00, 0x80, 0x00 };
+            uint8_t xoneInit1[] = { 0x05, 0x20, 0x00, 0x01, 0x00 };
+            uint8_t xoneInit2[] = { 0x09, 0x00, 0x00, 0x09, 0x00, 0x0F, 0x00, 0x00,
+                0x1D, 0x1D, 0xFF, 0x00, 0x00 };
+            uint8_t xoneInit3[] = { 0x09, 0x00, 0x00, 0x09, 0x00, 0x0F, 0x00, 0x00,
+                0x00, 0x00, 0x00, 0x00, 0x00 };
+//            QueueWrite(&xoneInit0, sizeof(xoneInit0));
+//            QueueWrite(&xoneInit1, sizeof(xoneInit1));
+//            QueueWrite(&xoneInit2, sizeof(xoneInit2));
+//            QueueWrite(&xoneInit3, sizeof(xoneInit3));
+        } else if (controller == Controller::Xbox360 || controller == Controller::Xbox360Pretend360 || controller == Controller::XboxOriginal) {
+            
+            /// Disable LED
+            /// Notes: Copied from 360Controller. Do we need to do this on XboxOriginal controller?
+//            Xbox360_Prepare(led,outLed);
+//            led.pattern=ledOff;
+//            QueueWrite(&led,sizeof(led));
+            
+        } else {
+            os_log(OS_LOG_DEFAULT, "Start - Fail due to unhandled Controller Type");
+            goto fail;
+        }
+        
+        /// Create HIDDevice
+        
+        
         
         /// Call super
         ret = Start(provider, SUPERDISPATCH);
@@ -330,6 +393,48 @@ kern_return_t IMPL(gamepad_driver_user, Stop) {
     return Stop(provider, SUPERDISPATCH);
 }
 
+/// MARK: --- Read / Write ---
+
+bool gamepad_driver_user::QueueRead(void) {
+    
+//    IOUSBCompletion complete;
+//    IOReturn err;
+//
+//    if ((inPipe == NULL) || (inBuffer == NULL))
+//        return false;
+//    complete.target=this;
+//    complete.action=ReadCompleteInternal;
+//    complete.parameter=inBuffer;
+//    err=inPipe->Read(inBuffer,0,0,inBuffer->getLength(),&complete);
+//    if(err==kIOReturnSuccess) return true;
+//    else {
+//        IOLog("read - failed to start (0x%.8x)\n",err);
+//        return false;
+//    }
+}
+
+bool gamepad_driver_user::QueueWrite(const void *bytes,UInt32 length) {
+    
+//    IOBufferMemoryDescriptor *outBuffer;
+//    IOUSBCompletion complete;
+//    IOReturn err;
+//
+//    outBuffer = IOBufferMemoryDescriptor::inTaskWithOptions(kernel_task,kIODirectionOut,length);
+//    if (outBuffer == NULL) {
+//        IOLog("send - unable to allocate buffer\n");
+//        return false;
+//    }
+//    outBuffer->writeBytes(0,bytes,length);
+//    complete.target=this;
+//    complete.action=WriteCompleteInternal;
+//    complete.parameter=outBuffer;
+//    err=outPipe->Write(outBuffer,0,0,length,&complete);
+//    if(err==kIOReturnSuccess) return true;
+//    else {
+//        IOLog("send - failed to start (0x%.8x)\n",err);
+//        return false;
+//    }
+}
 
 /// --- IOHIDDevice ---
 

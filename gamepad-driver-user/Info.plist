@@ -7,7 +7,7 @@
 	<key>CFBundleShortVersionString</key>
 	<string>1.0.0</string>
 	<key>CFBundleVersion</key>
-	<string>41</string>
+	<string>56</string>
 	<key>IOKitPersonalities</key>
 	<dict>
 		<key>wired_xbox_one</key>
