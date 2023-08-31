@@ -411,9 +411,10 @@ bool gamepad_driver_user::QueueRead(void) {
 //        IOLog("read - failed to start (0x%.8x)\n",err);
 //        return false;
 //    }
+    return false;
 }
 
-bool gamepad_driver_user::QueueWrite(const void *bytes,UInt32 length) {
+bool gamepad_driver_user::QueueWrite(const void *bytes, uint32_t length) {
     
 //    IOBufferMemoryDescriptor *outBuffer;
 //    IOUSBCompletion complete;
@@ -434,6 +435,7 @@ bool gamepad_driver_user::QueueWrite(const void *bytes,UInt32 length) {
 //        IOLog("send - failed to start (0x%.8x)\n",err);
 //        return false;
 //    }
+    return false;
 }
 
 /// --- IOHIDDevice ---
