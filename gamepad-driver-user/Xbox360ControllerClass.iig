@@ -21,7 +21,7 @@ public:
     virtual bool handleStart(IOService *provider) override;
 
 //    virtual OSData *newReportDescriptor(void) override;
-//    virtual OSDictionary *newDeviceDescription(void) override;
+    virtual OSDictionary *newDeviceDescription(void) override;
     
 
 //    virtual kern_return_t getReport(IOMemoryDescriptor *report, IOHIDReportType reportType, IOOptionBits options, uint32_t completionTimeout, OSAction *action) override;
@@ -34,7 +34,7 @@ public:
 
     
     
-    //    virtual IOReturn setProperties(OSObject *properties) override; /* From 360Controller, not sure if available in DriverKit. setProperty() def available  */
+//    virtual kern_return_t setProperties(OSDictionary *properties); /* From 360Controller, but not available in DriverKit. setProperty() is replacement  */
 //    virtual void setProperty(OSObject *key, OSObject *value) override;
 
 //    virtual void remapButtons(void *buffer);
@@ -71,7 +71,8 @@ public:
     
 private:
 //    bool pretend360;
-//    OSString* getDeviceString(uint8_t index,const char *def=NULL) const;
+    virtual OSString *copyDeviceString(uint8_t stringIndex, const char *fallback = NULL) LOCALONLY;
+    virtual OSNumber *createLocationID() LOCALONLY;
 };
 
 #endif /* Xbox360Controller_h */

@@ -13,15 +13,6 @@
 class XboxOneControllerClass : public Xbox360ControllerClass {
     
     
-    
-public:
-//    virtual bool start(IOService *provider) override; /* From 360Controller, In driverkit you override handleStart instead. */
-    virtual bool handleStart(IOService *provider) override;
-    
-    
-    
-    
-    
 //    OSDeclareDefaultStructors(XboxOneControllerClass)
 
 #define XboxOne_Prepare(x,t)      {memset(&x,0,sizeof(x));x.header.command=t;x.header.size=sizeof(x-4);}
