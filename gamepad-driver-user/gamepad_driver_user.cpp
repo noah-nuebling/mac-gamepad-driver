@@ -23,6 +23,7 @@
 
 /// Other Imports
 #include <cassert>
+#include "ControlStruct.h"
 
 /// Import Header
 #include "gamepad_driver_user.h"
@@ -48,7 +49,10 @@ struct gamepad_driver_user_IVars {
     
     IOUSBHostPipe *inPipe;
     IOUSBHostPipe *outPipe;
-    IOBufferMemoryDescriptor *inBuffer; /// Note: Why store inBuffer here but not outBuffer?
+    IOBufferMemoryDescriptor *inBuffer;
+    IOBufferMemoryDescriptor *outBuffer;
+    IODispatchQueue *queue;
+    void *padHandler;
 };
 
 bool gamepad_driver_user::init() {
@@ -83,6 +87,8 @@ void gamepad_driver_user::free() {
     if (ivars) {
         OSSafeReleaseNULL(ivars->inPipe);
         OSSafeReleaseNULL(ivars->outPipe);
+        OSSafeReleaseNULL(ivars->inBuffer);
+        OSSafeReleaseNULL(ivars->queue);
     }
     
     /// Free ivars struct
@@ -314,14 +320,33 @@ kern_return_t IMPL(gamepad_driver_user, Start) {
         /// Create buffer for input endpoint
         /// Notes:
         /// - We're passing 1 for the alignment param. The docs say 0 is the default, but the corresponding method which 360Controller uses (IOBufferMemoryDescriptor::inTaskWithOptions) has 1 as the default value. This is confusing. Not sure whether to pass 0 or 1.
+        /// - The 0 or 1 question is also important for the endpoint buffer!
         ivars->inBuffer = NULL;
         ret = IOBufferMemoryDescriptor::Create(kIOMemoryDirectionIn, inMaxPacketSize, 1, &ivars->inBuffer);
         if (ret != kIOReturnSuccess) {
             os_log(OS_LOG_DEFAULT, "Start - Failed to create buffer for input endpoint");
         }
         
+        /// Get maxPacketSize for output endpoint
+        uint16_t outMaxPacketSize = IOUSBGetEndpointMaxPacketSize(deviceSpeed, outDescriptor);
+        
+        /// Create buffer for output endpoint
+        /// Notes: 360Controller created a fresh buffer for every write request. I don't know why, but I think this is probably a a bit better.
+        ivars->outBuffer = NULL;
+        ret = IOBufferMemoryDescriptor::Create(kIOMemoryDirectionOut, outMaxPacketSize, 1, &ivars->outBuffer);
+        if (ret != kIOReturnSuccess) {
+            os_log(OS_LOG_DEFAULT, "Start - Failed to create buffer for output endpoint");
+        }
+        
         /// Skipping Chatpad stuff from 360Controller
         /// ....
+        
+        /// Store dispatch queue
+        ret = CopyDispatchQueue(kIOServiceDefaultQueueName, &ivars->queue);
+        if (ret != kIOReturnSuccess) {
+            os_log(OS_LOG_DEFAULT, "Start - Failed to get dispatch queue");
+            goto fail;
+        }
         
         /// Begin polling input
         bool success = QueueRead();
@@ -392,14 +417,79 @@ kern_return_t IMPL(gamepad_driver_user, Stop) {
     return Stop(provider, SUPERDISPATCH);
 }
 
-/// MARK: --- Read / Write ---
+/// MARK: --- Write ---
+
+bool gamepad_driver_user::QueueWrite(const void *bytes, uint32_t length) {
+    
+    /// Declare ret
+    IOReturn ret = kIOReturnSuccess;
+    
+    /// Resize buffer
+    ret = ivars->outBuffer->SetLength(length);
+    if (ret != kIOReturnSuccess) {
+        os_log(OS_LOG_DEFAULT, "Write - Failed to resize buffer. IOReturn: %.8x", ret);
+        return false;
+    }
+    
+    /// Get buffer address segment
+    IOAddressSegment addressSegment;
+    ret = ivars->outBuffer->GetAddressRange(&addressSegment);
+    if (ret != kIOReturnSuccess) {
+        os_log(OS_LOG_DEFAULT, "Write - Failed to get buffer address segment. IOReturn: %.8x", ret);
+        return false;
+    }
+    
+    /// Get raw buffer pointer
+    void *rawBuffer = (void *)addressSegment.address;
+    
+    /// Write to buffer
+    memcpy(rawBuffer, bytes, length);
+    
+    size_t referenceSize = 0;
+    OSAction *completionHandler;
+    ret = CreateActionWriteComplete(referenceSize, &completionHandler);
+    if (ret != kIOReturnSuccess) {
+        os_log(OS_LOG_DEFAULT, "Write - Failed to create action");
+        return false;
+    }
+    
+    /// Schedule async write to device
+    uint32_t timeout = 0;
+    ret = ivars->outPipe->AsyncIO(ivars->outBuffer, length, completionHandler, timeout);
+    if (ret != kIOReturnSuccess) {
+        os_log(OS_LOG_DEFAULT, "Write - Failed to write. IOReturn %.8x", ret);
+        return false;
+    }
+    
+    /// Cleanup
+    /// TODO: Do this on early return to prevent leaks
+    OSSafeReleaseNULL(completionHandler);
+    
+    /// Return success
+    return true;
+}
+
+void IMPL(gamepad_driver_user, WriteComplete) {
+    /// Type of this method:
+    /// `void func(OSAction *action, IOReturn status, uint32_t actualByteCount, uint64_t completionTimestamp)`
+    
+    /// Log error
+    if (status != kIOReturnSuccess) {
+        os_log(OS_LOG_DEFAULT, "Write - Error writing: %.8x\n", status);
+    } else {
+        /// Log
+        os_log(OS_LOG_DEFAULT, "Write - Wrote data");
+    }
+}
+
+/// MARK: --- Read ---
 
 bool gamepad_driver_user::QueueRead(void) {
     
-//    IOUSBCompletion complete;
-
-
-
+    /// Log
+    os_log(OS_LOG_DEFAULT, "Read - Requesting input");
+    
+    
     /// Declare return
     IOReturn ret;
 
@@ -428,55 +518,117 @@ bool gamepad_driver_user::QueueRead(void) {
     /// Create OSAction
     /// The only docs of how this works I found in OSAction.iig: https://newosxbook.com/src.jl?tree=xnu&file=/iokit/DriverKit/OSAction.iig
     size_t referenceSize = 0;
-    OSAction *action;
-    ret = CreateActionReadComplete(referenceSize, &action);
+    OSAction *completionHandler;
+    ret = CreateActionReadComplete(referenceSize, &completionHandler);
     if (ret != kIOReturnSuccess) {
         os_log(OS_LOG_DEFAULT, "Read - Failed to create action");
         return false;
     }
 
-    /// Schedule async read
-    ret = ivars->inPipe->AsyncIO(ivars->inBuffer, (uint32_t)inBufferLength, action, timeoutMs);
+    /// Schedule async read from device
+    ret = ivars->inPipe->AsyncIO(ivars->inBuffer, (uint32_t)inBufferLength, completionHandler, timeoutMs);
     if (ret != kIOReturnSuccess) {
-        os_log(OS_LOG_DEFAULT, "Read - Failed to read. Code %d, inBufferIsNull: %d, inBufferLength: %d, actionIsNull: %d, timeout: %d", ret, ivars->inBuffer == NULL, (uint32_t)inBufferLength, action == NULL, timeoutMs);
+        os_log(OS_LOG_DEFAULT, "Read - Failed to read. IOReturn %d, inBufferIsNull: %d, inBufferLength: %d, actionIsNull: %d, timeout: %d", ret, ivars->inBuffer == NULL, (uint32_t)inBufferLength, completionHandler == NULL, timeoutMs);
         return false;
     }
     
     /// Cleanup
-    /// Note: We should do this also when the method fails at any point to prevent leaks
-    OSSafeReleaseNULL(action);
+    /// TODO: We should do this also when the method fails at any point to prevent leaks
+    OSSafeReleaseNULL(completionHandler);
     
     /// Return success
     return true;
 }
 
 void IMPL(gamepad_driver_user, ReadComplete) {
+    /// Type of this method:
+    /// `void func(OSAction *action, IOReturn status, uint32_t actualByteCount, uint64_t completionTimestamp)`
+    
+    /// Log
     os_log(OS_LOG_DEFAULT, "Read - Received data. Status %d bytecount: %d, timestamp: %llu", status, actualByteCount, completionTimestamp);
+    
+    /// Guard padHandler exists
+    /// Notes:
+    /// - This logic is copied from 360Controller I don't know if it's necessary here.
+    /// - Comment from 360Controller: "avoid deadlock with release"
+    if (/*ivars->padHandler == NULL*/ false) {
+        os_log(OS_LOG_DEFAULT, "Read - Abort handling received data due to missing padHandler");
+        return;
+    }
+    
+    /// Enqueue workload
+    /// Note: This logic is copied from 360Controller (although it is implemented with locks there). I don't know if it's necessary here
+    
+    ivars->queue->DispatchSync(^{
+        
+        /// Declare return var
+        IOReturn ret = kIOReturnSuccess;
+        
+        /// Init reread var.
+        /// Note: In 360Controller it's set to this->isInactive() which is inherited from IOService in IOKit. But in DriverKit this doesn't seem to exist, and I couldn't see any replacement either. I assume they improved the IOService implementation so that  isInactive() is not necessary anymore
+        bool doReadAgain = true;
+        
+        /// Log not responding
+        if (status == kIOReturnNotResponding) {
+            os_log(OS_LOG_DEFAULT, "Read - kIOReturnNotResponding");
+        }
+        
+        /// Clear halted state of device on overrun
+        /// Notes:
+        /// - Coped from 360Controller. Don't know what this means
+        /// - Note: Passing true to ClearStall. Docs say "it’s recommended that you specify YES, but you may safely specify NO for control endpoints"
+        if (status == kIOReturnOverrun) {
+            os_log(OS_LOG_DEFAULT, "Read - kIOReturnOverrun, clearing stall");
+            if (ivars->inPipe) {
+                ivars->inPipe->ClearStall(true);
+            }
+        }
+        
+        if (status == kIOReturnSuccess || status == kIOReturnOverrun) {
+            
+            /// Guard buffer exists
+            /// Logic copied from 360Controller. Not sure if makes sense here.
+            if (ivars->inBuffer != NULL) {
+                    
+                /// Get buffer address range
+                IOAddressSegment bufferRange;
+                ret = ivars->inBuffer->GetAddressRange(&bufferRange);
+                if (ret != kIOReturnSuccess) {
+                    os_log(OS_LOG_DEFAULT, "Read - Failed to get address range for buffer");
+                    return;
+                }
+                
+                /// Get report
+                const XBOX360_IN_REPORT *report = (const XBOX360_IN_REPORT *)(IOVirtualAddress)bufferRange.address;
+                
+                /// Check report header
+                /// Note: Copied logic from 360Controller. Not sure what we are doing.
+                bool isValidReport = report->header.command == inReport && report->header.size == sizeof(XBOX360_IN_REPORT);
+                bool isXboxOneReport = report->header.command == 0x20 || report->header.command == 0x07;
+                
+                if (isValidReport || isXboxOneReport) {
+                    
+                    /// Dispatch to padHandler
+                    ret = kIOReturnSuccess; //ivars->padHandler->handleReport(inBuffer, kIOHIDReportTypeInput);
+                    if (ret != kIOReturnSuccess) {
+                        IOLog("Read - failed to handle report. IOReturn: %.8x", ret);
+                    }
+                }
+            }
+            
+        } else if (status == kIOReturnNotResponding) {
+            os_log(OS_LOG_DEFAULT, "Read - kIOReturnNotResponding");
+            doReadAgain = false;
+        } else {
+            doReadAgain = false;
+        }
+            
+        /// Queue another read
+        if (doReadAgain) QueueRead();
+    });
 };
 
-bool gamepad_driver_user::QueueWrite(const void *bytes, uint32_t length) {
-    
-//    IOBufferMemoryDescriptor *outBuffer;
-//    IOUSBCompletion complete;
-//    IOReturn err;
-//
-//    outBuffer = IOBufferMemoryDescriptor::inTaskWithOptions(kernel_task,kIODirectionOut,length);
-//    if (outBuffer == NULL) {
-//        IOLog("send - unable to allocate buffer\n");
-//        return false;
-//    }
-//    outBuffer->writeBytes(0,bytes,length);
-//    complete.target=this;
-//    complete.action=WriteCompleteInternal;
-//    complete.parameter=outBuffer;
-//    err = outPipe->Write(outBuffer,0,0,length,&complete);
-//    if(err==kIOReturnSuccess) return true;
-//    else {
-//        IOLog("send - failed to start (0x%.8x)\n",err);
-//        return false;
-//    }
-    return true;
-}
+
 
 /// --- IOHIDDevice ---
 

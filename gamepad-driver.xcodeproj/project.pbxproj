@@ -20,6 +20,7 @@
 		4F6785642AA021DA00836146 /* HIDDriverKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 4F541B4F2A9F45140030912B /* HIDDriverKit.framework */; };
 		4F6785672AA021DF00836146 /* DriverKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 4FDFE84D2AA001770068629C /* DriverKit.framework */; };
 		4F67856A2AA021E400836146 /* USBDriverKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 4F6785692AA021E400836146 /* USBDriverKit.framework */; };
+		4FE500E62AA175A9007E2EAE /* ControlStruct.h in Headers */ = {isa = PBXBuildFile; fileRef = 4FE500E32AA175A9007E2EAE /* ControlStruct.h */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -380,6 +381,7 @@
 		4F6785632AA0219B00836146 /* IOHIDDevice.iig */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.iig; path = IOHIDDevice.iig; sourceTree = "<group>"; };
 		4F6785692AA021E400836146 /* USBDriverKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = USBDriverKit.framework; path = ../../../../System/DriverKit/System/Library/Frameworks/USBDriverKit.framework; sourceTree = "<group>"; };
 		4FDFE84D2AA001770068629C /* DriverKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = DriverKit.framework; path = ../../../../System/DriverKit/System/Library/Frameworks/DriverKit.framework; sourceTree = "<group>"; };
+		4FE500E32AA175A9007E2EAE /* ControlStruct.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ControlStruct.h; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -486,6 +488,7 @@
 			children = (
 				4F3BF64B2A9ECE6900F1790B /* gamepad_driver_user.iig */,
 				4F3BF6492A9ECE6900F1790B /* gamepad_driver_user.cpp */,
+				4FE500E32AA175A9007E2EAE /* ControlStruct.h */,
 				4F3BF64D2A9ECE6900F1790B /* Info.plist */,
 				4F541BD72A9FBA270030912B /* gamepad-driver-user.entitlements */,
 				4F3BF6552A9ED2C000F1790B /* Notes.md */,
@@ -918,6 +921,7 @@
 			isa = PBXHeadersBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				4FE500E62AA175A9007E2EAE /* ControlStruct.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

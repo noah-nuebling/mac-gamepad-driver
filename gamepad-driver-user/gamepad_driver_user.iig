@@ -27,6 +27,7 @@ public:
     bool QueueWrite(const void *bytes, uint32_t length) LOCALONLY;
     
     virtual void ReadComplete(OSAction *action, IOReturn status, uint32_t actualByteCount, uint64_t completionTimestamp) TYPE(IOUSBHostPipe::CompleteAsyncIO);
+    virtual void WriteComplete(OSAction *action, IOReturn status, uint32_t actualByteCount, uint64_t completionTimestamp) TYPE(IOUSBHostPipe::CompleteAsyncIO);
     
         
 };
