@@ -17,6 +17,10 @@
 		4F3BF64C2A9ECE6900F1790B /* gamepad_driver_user.iig in Sources */ = {isa = PBXBuildFile; fileRef = 4F3BF64B2A9ECE6900F1790B /* gamepad_driver_user.iig */; };
 		4F3BF6502A9ECE6900F1790B /* com.nuebling.gamepad-driver-app.gamepad-driver-user.dext in Embed System Extensions */ = {isa = PBXBuildFile; fileRef = 4F3BF6442A9ECE6900F1790B /* com.nuebling.gamepad-driver-app.gamepad-driver-user.dext */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
 		4F3BF6572A9EDF5A00F1790B /* ExtensionInstaller.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4F3BF6562A9EDF5A00F1790B /* ExtensionInstaller.swift */; };
+		4F5C9AAC2AA216E1009C117A /* Xbox360ControllerClass.iig in Sources */ = {isa = PBXBuildFile; fileRef = 4F5C9AAB2AA216E1009C117A /* Xbox360ControllerClass.iig */; };
+		4F5C9AB02AA216F5009C117A /* Xbox360ControllerClass.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 4F5C9AAF2AA216F5009C117A /* Xbox360ControllerClass.cpp */; };
+		4F5C9AB42AA28162009C117A /* XboxOneControllerClass.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 4F5C9AB22AA28162009C117A /* XboxOneControllerClass.cpp */; };
+		4F5C9AB52AA28162009C117A /* XboxOneControllerClass.iig in Headers */ = {isa = PBXBuildFile; fileRef = 4F5C9AB32AA28162009C117A /* XboxOneControllerClass.iig */; };
 		4F6785642AA021DA00836146 /* HIDDriverKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 4F541B4F2A9F45140030912B /* HIDDriverKit.framework */; };
 		4F6785672AA021DF00836146 /* DriverKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 4FDFE84D2AA001770068629C /* DriverKit.framework */; };
 		4F67856A2AA021E400836146 /* USBDriverKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 4F6785692AA021E400836146 /* USBDriverKit.framework */; };
@@ -96,6 +100,10 @@
 		4F541BCA2A9FB5220030912B /* .gitignore */ = {isa = PBXFileReference; lastKnownFileType = text; path = .gitignore; sourceTree = "<group>"; };
 		4F541BCB2A9FB5220030912B /* HIDKeyboardDriver.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; path = HIDKeyboardDriver.xcodeproj; sourceTree = "<group>"; };
 		4F541BD72A9FBA270030912B /* gamepad-driver-user.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = "gamepad-driver-user.entitlements"; sourceTree = "<group>"; };
+		4F5C9AAB2AA216E1009C117A /* Xbox360ControllerClass.iig */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.iig; path = Xbox360ControllerClass.iig; sourceTree = "<group>"; };
+		4F5C9AAF2AA216F5009C117A /* Xbox360ControllerClass.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = Xbox360ControllerClass.cpp; sourceTree = "<group>"; };
+		4F5C9AB22AA28162009C117A /* XboxOneControllerClass.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = XboxOneControllerClass.cpp; sourceTree = "<group>"; };
+		4F5C9AB32AA28162009C117A /* XboxOneControllerClass.iig */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.iig; path = XboxOneControllerClass.iig; sourceTree = "<group>"; };
 		4F6784412AA0210300836146 /* JavaRuntimeSupport.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = JavaRuntimeSupport.framework; sourceTree = "<group>"; };
 		4F6784422AA0210300836146 /* MetricKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = MetricKit.framework; sourceTree = "<group>"; };
 		4F6784432AA0210300836146 /* Network.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = Network.framework; sourceTree = "<group>"; };
@@ -488,6 +496,10 @@
 			children = (
 				4F3BF64B2A9ECE6900F1790B /* gamepad_driver_user.iig */,
 				4F3BF6492A9ECE6900F1790B /* gamepad_driver_user.cpp */,
+				4F5C9AAB2AA216E1009C117A /* Xbox360ControllerClass.iig */,
+				4F5C9AAF2AA216F5009C117A /* Xbox360ControllerClass.cpp */,
+				4F5C9AB32AA28162009C117A /* XboxOneControllerClass.iig */,
+				4F5C9AB22AA28162009C117A /* XboxOneControllerClass.cpp */,
 				4FE500E32AA175A9007E2EAE /* ControlStruct.h */,
 				4F3BF64D2A9ECE6900F1790B /* Info.plist */,
 				4F541BD72A9FBA270030912B /* gamepad-driver-user.entitlements */,
@@ -922,6 +934,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				4FE500E62AA175A9007E2EAE /* ControlStruct.h in Headers */,
+				4F5C9AB52AA28162009C117A /* XboxOneControllerClass.iig in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -1119,8 +1132,11 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				4F5C9AAC2AA216E1009C117A /* Xbox360ControllerClass.iig in Sources */,
+				4F5C9AB42AA28162009C117A /* XboxOneControllerClass.cpp in Sources */,
 				4F3BF64C2A9ECE6900F1790B /* gamepad_driver_user.iig in Sources */,
 				4F3BF64A2A9ECE6900F1790B /* gamepad_driver_user.cpp in Sources */,
+				4F5C9AB02AA216F5009C117A /* Xbox360ControllerClass.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

@@ -1,0 +1,77 @@
+//
+//  Controller.iig
+//  gamepad-driver-user
+//
+//  Created by Noah Nübling on 01.09.23.
+//
+
+#ifndef Controller_h
+#define Controller_h
+
+#include <HIDDriverKit/IOUserHIDDevice.iig>
+#include <DriverKit/DriverKit.iig>
+#include "gamepad_driver_user.iig"
+
+class Xbox360ControllerClass : public IOUserHIDDevice {
+    
+//    OSDeclareDefaultStructors(Xbox360ControllerClass)
+
+public:
+//    virtual bool start(IOService *provider) override; /* From 360Controller, In driverkit you override handleStart instead. */
+    virtual bool handleStart(IOService *provider) override;
+
+//    virtual OSData *newReportDescriptor(void) override;
+//    virtual OSDictionary *newDeviceDescription(void) override;
+    
+
+//    virtual kern_return_t getReport(IOMemoryDescriptor *report, IOHIDReportType reportType, IOOptionBits options, uint32_t completionTimeout, OSAction *action) override;
+//    virtual kern_return_t setReport(IOMemoryDescriptor *report, IOHIDReportType reportType, IOOptionBits options, uint32_t completionTimeout, OSAction *action) override;
+//    virtual kern_return_t handleReport(uint64_t             timestamp,
+//                                       IOMemoryDescriptor  *report,
+//                                       uint32_t             reportLength,
+//                                       IOHIDReportType      reportType = kIOHIDReportTypeInput,
+//                                       IOOptionBits         options) override;
+
+    
+    
+    //    virtual IOReturn setProperties(OSObject *properties) override; /* From 360Controller, not sure if available in DriverKit. setProperty() def available  */
+//    virtual void setProperty(OSObject *key, OSObject *value) override;
+
+//    virtual void remapButtons(void *buffer);
+//    virtual void remapAxes(void *buffer);
+    
+    /// vvv Unused stuff from 360Controller vvv
+    /// Notes:
+    /// - I think specifying usage and usagePage methods isn't necessary in DriverKit because they can be derived from reportDescriptor
+    /// - locationId, manufacturerString, etc. are returned by newDeviceDescriptor in DriverKit
+    
+//    virtual OSNumber* newPrimaryUsageNumber() const override;
+//    virtual OSNumber* newPrimaryUsagePageNumber() const override;
+    
+//    virtual OSNumber* newLocationIDNumber() const;
+//    virtual OSString* newManufacturerString() const override;
+//    virtual OSNumber* newProductIDNumber() const override;
+//    virtual OSString* newProductString() const override;
+//    virtual OSString* newSerialNumberString() const override;
+//    virtual OSString* newTransportString() const override;
+//    virtual OSNumber* newVendorIDNumber() const override;
+    
+    /// vvv DriverKit keys for newDeviceDescription() return. Marked with x were also returned by 360Controller
+//    kIOHIDReportIntervalKey
+//    kIOHIDVendorIDKey x
+//    kIOHIDProductIDKey x
+//    kIOHIDTransportKey x
+//    kIOHIDVersionNumberKey
+//    kIOHIDCountryCodeKey
+//    kIOHIDLocationIDKey x
+//    kIOHIDManufacturerKey x
+//    kIOHIDProductKey x
+//    kIOHIDSerialNumberKey x
+//    kIOHIDRequestTimeoutKey
+    
+private:
+//    bool pretend360;
+//    OSString* getDeviceString(uint8_t index,const char *def=NULL) const;
+};
+
+#endif /* Xbox360Controller_h */

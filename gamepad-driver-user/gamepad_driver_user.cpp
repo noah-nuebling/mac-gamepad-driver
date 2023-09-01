@@ -559,7 +559,7 @@ void IMPL(gamepad_driver_user, ReadComplete) {
     /// Enqueue workload
     /// Note: This logic is copied from 360Controller (although it is implemented with locks there). I don't know if it's necessary here
     
-    ivars->queue->DispatchSync(^{
+//    ivars->queue->DispatchSync(^{
         
         /// Declare return var
         IOReturn ret = kIOReturnSuccess;
@@ -625,7 +625,7 @@ void IMPL(gamepad_driver_user, ReadComplete) {
             
         /// Queue another read
         if (doReadAgain) QueueRead();
-    });
+//    });
 };
 
 

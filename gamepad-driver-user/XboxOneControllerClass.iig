@@ -1,0 +1,36 @@
+//
+//  XboxOneController.iig
+//  gamepad-driver
+//
+//  Created by Noah Nübling on 01.09.23.
+//
+
+#ifndef XboxOneController_h
+#define XboxOneController_h
+
+#include "Xbox360ControllerClass.h"
+
+class XboxOneControllerClass : public Xbox360ControllerClass {
+    
+//    OSDeclareDefaultStructors(XboxOneControllerClass)
+
+#define XboxOne_Prepare(x,t)      {memset(&x,0,sizeof(x));x.header.command=t;x.header.size=sizeof(x-4);}
+
+//public:
+//    virtual IOReturn setReport(IOMemoryDescriptor *report,IOHIDReportType reportType,IOOptionBits options=0);
+//    virtual IOReturn handleReport(
+//                                  IOMemoryDescriptor * report,
+//                                  IOHIDReportType      reportType = kIOHIDReportTypeInput,
+//                                  IOOptionBits         options    = 0 );
+//
+//    virtual void convertFromXboxOne(void *buffer, uint8_t packetSize);
+//    virtual OSString* newProductString() const;
+    
+//protected:
+//    uint8_t lastData[20];
+//    bool isXboxOneGuideButtonPressed;
+//    void reorderButtons(uint16_t *buttons, uint8_t mapping[]);
+//    uint16_t convertButtonPacket(uint16_t buttons);
+};
+
+#endif /* XboxOneController_h */
