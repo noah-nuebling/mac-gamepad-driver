@@ -13,7 +13,6 @@
 
 /// Import Header
 #include "Xbox360ControllerClass.h"
-#include "XboxOneControllerClass.h"
 
 #pragma mark - Xbox360Controller
 

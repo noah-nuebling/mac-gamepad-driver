@@ -8,9 +8,19 @@
 #ifndef XboxOneController_h
 #define XboxOneController_h
 
-#include "Xbox360ControllerClass.h"
+#include "Xbox360ControllerClass.iig"
 
 class XboxOneControllerClass : public Xbox360ControllerClass {
+    
+    
+    
+public:
+//    virtual bool start(IOService *provider) override; /* From 360Controller, In driverkit you override handleStart instead. */
+    virtual bool handleStart(IOService *provider) override;
+    
+    
+    
+    
     
 //    OSDeclareDefaultStructors(XboxOneControllerClass)
 
