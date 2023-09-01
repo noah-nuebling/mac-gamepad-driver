@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		4F2488062AA2A71A001C4A5B /* xbox360hid.h in Headers */ = {isa = PBXBuildFile; fileRef = 4F2488032AA2A71A001C4A5B /* xbox360hid.h */; };
 		4F3BF6232A9ECC4600F1790B /* gamepad_driver.hpp in Headers */ = {isa = PBXBuildFile; fileRef = 4F3BF6222A9ECC4600F1790B /* gamepad_driver.hpp */; };
 		4F3BF6252A9ECC4600F1790B /* gamepad_driver.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 4F3BF6242A9ECC4600F1790B /* gamepad_driver.cpp */; };
 		4F3BF6332A9ECDE900F1790B /* gamepad_driver_appApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4F3BF6322A9ECDE900F1790B /* gamepad_driver_appApp.swift */; };
@@ -67,6 +68,7 @@
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
+		4F2488032AA2A71A001C4A5B /* xbox360hid.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = xbox360hid.h; sourceTree = "<group>"; };
 		4F3BF61F2A9ECC4600F1790B /* gamepad-driver.kext */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = "gamepad-driver.kext"; sourceTree = BUILT_PRODUCTS_DIR; };
 		4F3BF6222A9ECC4600F1790B /* gamepad_driver.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = gamepad_driver.hpp; sourceTree = "<group>"; };
 		4F3BF6242A9ECC4600F1790B /* gamepad_driver.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = gamepad_driver.cpp; sourceTree = "<group>"; };
@@ -502,6 +504,7 @@
 				4F5C9AB32AA28162009C117A /* XboxOneControllerClass.iig */,
 				4F5C9AB22AA28162009C117A /* XboxOneControllerClass.cpp */,
 				4FE500E32AA175A9007E2EAE /* ControlStruct.h */,
+				4F2488032AA2A71A001C4A5B /* xbox360hid.h */,
 				4F3BF64D2A9ECE6900F1790B /* Info.plist */,
 				4F541BD72A9FBA270030912B /* gamepad-driver-user.entitlements */,
 				4F3BF6552A9ED2C000F1790B /* Notes.md */,
@@ -934,6 +937,7 @@
 			isa = PBXHeadersBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				4F2488062AA2A71A001C4A5B /* xbox360hid.h in Headers */,
 				4FE500E62AA175A9007E2EAE /* ControlStruct.h in Headers */,
 				4F5C9AB52AA28162009C117A /* XboxOneControllerClass.iig in Headers */,
 			);

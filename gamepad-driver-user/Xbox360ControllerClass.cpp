@@ -12,6 +12,9 @@
 #include <USBDriverKit/IOUSBHostDevice.h>
 #include "gamepad_driver_user.h"
 
+namespace HID_360 {
+#include "xbox360hid.h"
+}
 
 /// Import Header
 #include "Xbox360ControllerClass.h"
@@ -70,17 +73,15 @@ bool Xbox360ControllerClass::handleStart(IOService *provider) {
 //    setProperties(properties);
 //}
 
-//// Returns the HID descriptor for this device
-//IOReturn Xbox360ControllerClass::newReportDescriptor(IOMemoryDescriptor **descriptor) const
-//{
-//    IOBufferMemoryDescriptor *buffer = IOBufferMemoryDescriptor::inTaskWithOptions(kernel_task,kIODirectionOut,sizeof(HID_360::ReportDescriptor));
-//
-//    if (buffer == NULL) return kIOReturnNoResources;
-//    buffer->writeBytes(0,HID_360::ReportDescriptor,sizeof(HID_360::ReportDescriptor));
-//    *descriptor=buffer;
-//    return kIOReturnSuccess;
-//}
-//
+OSData *Xbox360ControllerClass::newReportDescriptor(void) {
+    
+    /// Returns the HID descriptor for this device
+    
+    OSData *result = OSData::withBytes(&HID_360::ReportDescriptor, sizeof(HID_360::ReportDescriptor));
+    
+    return result;
+}
+
 //// Handles a message from the userspace IOHIDDeviceInterface122::setReport function
 //IOReturn Xbox360ControllerClass::setReport(IOMemoryDescriptor *report,IOHIDReportType reportType,IOOptionBits options)
 //{
