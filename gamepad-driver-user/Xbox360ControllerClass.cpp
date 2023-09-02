@@ -11,6 +11,7 @@
 #include <DriverKit/DriverKit.h>
 #include <USBDriverKit/IOUSBHostDevice.h>
 #include "gamepad_driver_user.h"
+#include "ControlStruct.h"
 
 namespace HID_360 {
 #include "xbox360hid.h"
@@ -57,21 +58,23 @@ bool Xbox360ControllerClass::handleStart(IOService *provider) {
 //    return IOHIDDevice::start(provider);
 }
 
-//kern_return_t Xbox360ControllerClass::setProperties(OSDictionary *properties) {
-//    
-//    gamepad_driver_user *owner = GetOwner(this);
-//    if (owner == NULL)
-//        return kIOReturnUnsupported;
-//    return owner->SetProperties(properties);
-//}
+void Xbox360ControllerClass::setProperty(OSObject *key, OSObject *value) {
+    
+    OSDictionary *properties = OSDictionary::withCapacity(1);
+    properties->setObject(key, value);
+    
+    setProperties(properties);
+    
+    OSSafeReleaseNULL(properties);
+}
 
-//void Xbox360ControllerClass::setProperty(OSObject *key, OSObject *value) {
-//    
-//    OSDictionary *properties = OSDictionary::withCapacity(1);
-//    properties->setObject(key, value);
-//    
-//    setProperties(properties);
-//}
+kern_return_t Xbox360ControllerClass::setProperties(OSDictionary *properties) {
+
+    gamepad_driver_user *owner = GetOwner(this);
+    if (owner == NULL)
+        return kIOReturnUnsupported;
+    return owner->SetProperties(properties);
+}
 
 OSData *Xbox360ControllerClass::newReportDescriptor(void) {
     
@@ -82,54 +85,89 @@ OSData *Xbox360ControllerClass::newReportDescriptor(void) {
     return result;
 }
 
-//// Handles a message from the userspace IOHIDDeviceInterface122::setReport function
-//IOReturn Xbox360ControllerClass::setReport(IOMemoryDescriptor *report,IOHIDReportType reportType,IOOptionBits options)
-//{
-//    char data[2];
-//
-//    report->readBytes(0, data, 2);
-//    if (GetOwner(this)->rumbleType == 1) // Don't Rumble
-//        return kIOReturnSuccess;
-//    switch(data[0]) {
-//        case 0x00:  // Set force feedback
-//            if((data[1]!=report->getLength()) || (data[1]!=0x04)) return kIOReturnUnsupported;
-//        {
-//            XBOX360_OUT_RUMBLE rumble;
-//
-//            Xbox360_Prepare(rumble,outRumble);
-//            report->readBytes(2,data,2);
-//            rumble.big=data[0];
-//            rumble.little=data[1];
-//            GetOwner(this)->QueueWrite(&rumble,sizeof(rumble));
-//            // IOLog("Set rumble: big(%d) little(%d)\n", rumble.big, rumble.little);
-//        }
-//            return kIOReturnSuccess;
-//        case 0x01:  // Set LEDs
-//            if((data[1]!=report->getLength())||(data[1]!=0x03)) return kIOReturnUnsupported;
-//        {
-//            XBOX360_OUT_LED led;
-//
-//            report->readBytes(2,data,1);
-//            Xbox360_Prepare(led,outLed);
-//            led.pattern=data[0];
-//            GetOwner(this)->QueueWrite(&led,sizeof(led));
-//            // IOLog("Set LED: %d\n", led.pattern);
-//        }
-//            return kIOReturnSuccess;
-//        default:
-//            IOLog("Unknown escape %d\n", data[0]);
-//            return kIOReturnUnsupported;
-//    }
-//}
-//
-//// Get report
-//IOReturn Xbox360ControllerClass::getReport(IOMemoryDescriptor *report,IOHIDReportType reportType,IOOptionBits options)
-//{
-//    // Doesn't do anything yet ;)
-//    return kIOReturnUnsupported;
-//}
-//
-//IOReturn Xbox360ControllerClass::handleReport(IOMemoryDescriptor * descriptor, IOHIDReportType reportType, IOOptionBits options) {
+
+kern_return_t Xbox360ControllerClass::setReport(IOMemoryDescriptor *report, IOHIDReportType reportType, IOOptionBits options, uint32_t completionTimeout, OSAction *action) {
+    
+    /// Notes:
+    /// - Comment from 360Controller: Handles a message from the userspace IOHIDDeviceInterface122::setReport function
+    /// - Why did the 360Controller author use those scopes inside the switch?? Kind of weird but leaving it there cause idk why they did that.
+
+    
+    /// Map report memory into current process' address space
+    /// Notes:
+    /// - Not sure what we are doing here at all
+    
+    IOMemoryMap *map;
+    uint64_t mappingOptions = kIOMemoryMapCacheModeDefault;
+    report->CreateMapping(mappingOptions, 0, 0, 0, 0, &map);
+    
+    /// Get pointer to raw report data
+    uint8_t *reportData = (uint8_t *)map->GetAddress();
+    uint64_t reportDataLength = map->GetLength();
+    
+    /// Check whether rumble is enabled
+    bool doRumble = true; // GetOwner(this)->rumbleType != 1;
+    
+    /// Return if rumble disabled
+    /// Note: Why wouldn't we set leds if rumble is disabled?
+    if (!doRumble) {
+        return kIOReturnSuccess;
+    }
+    
+    switch(reportData[0]) {
+            
+        case 0x00:
+            
+            /// Set force feedback
+            
+            if (reportData[1] != reportDataLength || reportData[1] != 0x04) {
+                return kIOReturnUnsupported;
+            }
+        {
+            XBOX360_OUT_RUMBLE rumble;
+
+            Xbox360_Prepare(rumble, outRumble);
+            rumble.big = reportData[2];
+            rumble.little = reportData[3];
+            GetOwner(this)->QueueWrite(&rumble, sizeof(rumble));
+            
+            // IOLog("Set rumble: big(%d) little(%d)\n", rumble.big, rumble.little);
+        }
+            return kIOReturnSuccess;
+            
+        case 0x01:
+            
+            /// Set LEDs
+            
+            if (reportData[1] != reportDataLength || reportData[1] != 0x03) {
+                return kIOReturnUnsupported;
+            }
+        {
+            XBOX360_OUT_LED led;
+            Xbox360_Prepare(led, outLed);
+            led.pattern = reportData[2];
+            GetOwner(this)->QueueWrite(&led, sizeof(led));
+            
+            // IOLog("Set LED: %d\n", led.pattern);
+        }
+            return kIOReturnSuccess;
+            
+        default:
+            
+            /// Uknown escape
+            
+            os_log(OS_LOG_DEFAULT, "Unknown escape %d\n", reportData[0]);
+            return kIOReturnUnsupported;
+    }
+}
+
+kern_return_t Xbox360ControllerClass::getReport(IOMemoryDescriptor *report, IOHIDReportType reportType, IOOptionBits options, uint32_t completionTimeout, OSAction *action) {
+    
+    /// Get report doesn't do anything yet ;)
+    return kIOReturnUnsupported;
+}
+
+//kern_return_t Xbox360ControllerClass::handleReport(IOMemoryDescriptor * descriptor, IOHIDReportType reportType, IOOptionBits options) {
 //    if (descriptor->getLength() >= sizeof(XBOX360_IN_REPORT)) {
 //        IOBufferMemoryDescriptor *desc = OSDynamicCast(IOBufferMemoryDescriptor, descriptor);
 //        if (desc != NULL) {

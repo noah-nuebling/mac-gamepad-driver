@@ -23,9 +23,8 @@ public:
     virtual OSData *newReportDescriptor(void) override;
     virtual OSDictionary *newDeviceDescription(void) override;
     
-
-//    virtual kern_return_t getReport(IOMemoryDescriptor *report, IOHIDReportType reportType, IOOptionBits options, uint32_t completionTimeout, OSAction *action) override;
-//    virtual kern_return_t setReport(IOMemoryDescriptor *report, IOHIDReportType reportType, IOOptionBits options, uint32_t completionTimeout, OSAction *action) override;
+    virtual kern_return_t setReport(IOMemoryDescriptor *report, IOHIDReportType reportType, IOOptionBits options, uint32_t completionTimeout, OSAction *action) override;
+    virtual kern_return_t getReport(IOMemoryDescriptor *report, IOHIDReportType reportType, IOOptionBits options, uint32_t completionTimeout, OSAction *action) override;
 //    virtual kern_return_t handleReport(uint64_t             timestamp,
 //                                       IOMemoryDescriptor  *report,
 //                                       uint32_t             reportLength,
@@ -33,12 +32,8 @@ public:
 //                                       IOOptionBits         options) override;
 
     
-    
-//    virtual kern_return_t setProperties(OSDictionary *properties); /* From 360Controller, but not available in DriverKit. setProperty() is replacement  */
-//    virtual void setProperty(OSObject *key, OSObject *value) override;
-
-//    virtual void remapButtons(void *buffer);
-//    virtual void remapAxes(void *buffer);
+    virtual void setProperty(OSObject *key, OSObject *value) override;
+    virtual kern_return_t setProperties(OSDictionary *properties) LOCALONLY; /* From 360Controller, but not available in DriverKit. setProperty() is replacement  */
     
     /// vvv Unused stuff from 360Controller vvv
     /// Notes:
@@ -73,6 +68,8 @@ private:
 //    bool pretend360;
     virtual OSString *copyDeviceString(uint8_t stringIndex, const char *fallback = NULL) LOCALONLY;
     virtual OSNumber *createLocationID() LOCALONLY;
+//    virtual void remapButtons(void *buffer) LOCALONLY;
+//    virtual void remapAxes(void *buffer) LOCALONLY;
 };
 
 #endif /* Xbox360Controller_h */
