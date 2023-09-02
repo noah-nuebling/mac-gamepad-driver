@@ -25,11 +25,11 @@ public:
     
     virtual kern_return_t setReport(IOMemoryDescriptor *report, IOHIDReportType reportType, IOOptionBits options, uint32_t completionTimeout, OSAction *action) override;
     virtual kern_return_t getReport(IOMemoryDescriptor *report, IOHIDReportType reportType, IOOptionBits options, uint32_t completionTimeout, OSAction *action) override;
-//    virtual kern_return_t handleReport(uint64_t             timestamp,
-//                                       IOMemoryDescriptor  *report,
-//                                       uint32_t             reportLength,
-//                                       IOHIDReportType      reportType = kIOHIDReportTypeInput,
-//                                       IOOptionBits         options) override;
+    virtual kern_return_t handleReport(uint64_t             timestamp,
+                                       IOMemoryDescriptor  *descriptor,
+                                       uint32_t             reportLength,
+                                       IOHIDReportType      reportType /*= kIOHIDReportTypeInput*/,
+                                       IOOptionBits         options /*= 0*/) override;
 
     
     virtual void setProperty(OSObject *key, OSObject *value) override;

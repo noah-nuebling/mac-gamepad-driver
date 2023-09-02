@@ -167,23 +167,51 @@ kern_return_t Xbox360ControllerClass::getReport(IOMemoryDescriptor *report, IOHI
     return kIOReturnUnsupported;
 }
 
-//kern_return_t Xbox360ControllerClass::handleReport(IOMemoryDescriptor * descriptor, IOHIDReportType reportType, IOOptionBits options) {
-//    if (descriptor->getLength() >= sizeof(XBOX360_IN_REPORT)) {
-//        IOBufferMemoryDescriptor *desc = OSDynamicCast(IOBufferMemoryDescriptor, descriptor);
-//        if (desc != NULL) {
-//            XBOX360_IN_REPORT *report=(XBOX360_IN_REPORT*)desc->getBytesNoCopy();
-//            if ((report->header.command==inReport) && (report->header.size==sizeof(XBOX360_IN_REPORT))) {
+kern_return_t Xbox360ControllerClass::handleReport(uint64_t             timestamp,
+                                                   IOMemoryDescriptor  *descriptor,
+                                                   uint32_t             reportLength,
+                                                   IOHIDReportType      reportType /*= kIOHIDReportTypeInput*/,
+                                                   IOOptionBits         options /*= 0*/) {
+    
+    /// Declare reusable ret
+    kern_return_t ret = KERN_SUCCESS;
+    
+    if (reportLength >= sizeof(XBOX360_IN_REPORT)) {
+        
+        IOBufferMemoryDescriptor *desc = OSDynamicCast(IOBufferMemoryDescriptor, descriptor);
+        
+        if (desc != NULL) {
+            
+            /// Get addressSegment
+            IOAddressSegment addressSegment;
+            ret = desc->GetAddressRange(&addressSegment);
+            if (ret != KERN_SUCCESS) {
+                os_log(OS_LOG_DEFAULT, "handleReport - Failed to get AddressRange from reportDescriptor");
+                return kIOReturnError; /** Not sure which error to return */
+            }
+            
+            /// Get raw report
+            
+            XBOX360_IN_REPORT *report = (XBOX360_IN_REPORT *)addressSegment.address;
+            
+            /// Modify report according to settings
+            
+//            if (report->header.command == inReport && report->header.size == sizeof(XBOX360_IN_REPORT)) {
 //                GetOwner(this)->fiddleReport(report->left, report->right);
 //                if (!(GetOwner(this)->noMapping))
 //                    remapButtons(report);
 //                if (GetOwner(this)->swapSticks)
 //                    remapAxes(report);
 //            }
-//        }
-//    }
-//    IOReturn ret = IOHIDDevice::handleReport(descriptor, reportType, options);
-//    return ret;
-//}
+        }
+    }
+    
+    /// Pass report to super method
+    ret = IOHIDDevice::handleReport(timestamp, descriptor, reportLength, reportType, options);
+    
+    /// Return
+    return ret;
+}
 
 
 OSString *Xbox360ControllerClass::copyDeviceString(uint8_t stringIndex, const char *fallback) {
