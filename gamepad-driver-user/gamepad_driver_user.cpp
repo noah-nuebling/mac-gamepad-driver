@@ -24,11 +24,15 @@
 /// Other Imports
 #include <cassert>
 #include "ControlStruct.h"
+#include "Xbox360ControllerClass.h"
+#include "XboxOneControllerClass.h"
 
 /// Import Header
 #include "gamepad_driver_user.h"
 
 /// MARK: --- Declarations ---
+
+#define kIOSerialDeviceType   "Serial360Device"
 
 namespace Controller {
     enum Type {
@@ -52,7 +56,8 @@ struct gamepad_driver_user_IVars {
     IOBufferMemoryDescriptor *inBuffer;
     IOBufferMemoryDescriptor *outBuffer;
     IODispatchQueue *queue;
-    void *padHandler;
+    Controller::Type controller;
+    Xbox360ControllerClass *padHandler;
 };
 
 bool gamepad_driver_user::init() {
@@ -198,6 +203,7 @@ kern_return_t IMPL(gamepad_driver_user, Start) {
             
             /// Assign result and break if known controller interface was found
             if (controller != Controller::unknown) {
+                ivars->controller = controller;
                 controllerInterface = interface;
                 controllerInterfaceDescriptor = interfaceDescriptor;
                 break;
@@ -381,9 +387,8 @@ kern_return_t IMPL(gamepad_driver_user, Start) {
             goto fail;
         }
         
-        /// Create HIDDevice
-        
-        
+        /// Create and attach IOHIDDevice
+        PadConnect();
         
         /// Call super
         ret = Start(provider, SUPERDISPATCH);
@@ -551,7 +556,7 @@ void IMPL(gamepad_driver_user, ReadComplete) {
     /// Notes:
     /// - This logic is copied from 360Controller I don't know if it's necessary here.
     /// - Comment from 360Controller: "avoid deadlock with release"
-    if (/*ivars->padHandler == NULL*/ false) {
+    if (ivars->padHandler == NULL) {
         os_log(OS_LOG_DEFAULT, "Read - Abort handling received data due to missing padHandler");
         return;
     }
@@ -609,7 +614,7 @@ void IMPL(gamepad_driver_user, ReadComplete) {
                 if (isValidReport || isXboxOneReport) {
                     
                     /// Dispatch to padHandler
-                    ret = kIOReturnSuccess; //ivars->padHandler->handleReport(inBuffer, kIOHIDReportTypeInput);
+                    ret = ivars->padHandler->handleReport(inBuffer, kIOHIDReportTypeInput);
                     if (ret != kIOReturnSuccess) {
                         IOLog("Read - failed to handle report. IOReturn: %.8x", ret);
                     }
@@ -629,52 +634,92 @@ void IMPL(gamepad_driver_user, ReadComplete) {
 };
 
 
+/// MARK: --- Support for main controller ---
 
-/// --- IOHIDDevice ---
-
-/*
-kern_return_t gamepad_driver_user::handleReport(uint64_t timestamp, IOMemoryDescriptor* report, uint32_t reportLength, IOHIDReportType reportType, IOOptionBits options) {
+void gamepad_driver_user::PadConnect(void) {
     
+    bool success;
+    IOReturn ret;
     
-//    IOHIDDevice::handleReport(timestamp, report, reportLength, reportType, options);
+    PadDisconnect();
     
-    return KERN_SUCCESS;
-}
-
-
-kern_return_t gamepad_driver_user::getReport(IOMemoryDescriptor *report, IOHIDReportType reportType, IOOptionBits options, uint32_t completionTimeout, OSAction *action) {
-
-    return KERN_SUCCESS;
-}
-kern_return_t gamepad_driver_user::setReport(IOMemoryDescriptor *report, IOHIDReportType reportType, IOOptionBits options, uint32_t completionTimeout, OSAction *action) {
+    Controller::Type controller = ivars->controller;
+    Xbox360ControllerClass *padHandler = NULL;
     
-    return KERN_SUCCESS;
-}
-//void gamepad_driver_user::CompleteReport(OSAction *action, IOReturn status, uint32_t actualByteCount) {
-//    
-//}
-void gamepad_driver_user::setProperty(OSObject *key, OSObject *value) {
+    if (controller == Controller::XboxOriginal) {
+//        padHandler = new XboxOriginalControllerClass;
+    } else if (controller == Controller::XboxOne) {
+        padHandler = new XboxOneControllerClass;
+    } else if (controller == Controller::XboxOnePretend360) {
+//        padHandler = new XboxOnePretend360Class;
+    } else if (controller == Controller::Xbox360Pretend360) {
+//        padHandler = new Xbox360Pretend360Class;
+    } else {
+        padHandler = new Xbox360ControllerClass;
+    }
+    
+    if (padHandler == NULL) {
+        return;
+    }
         
+    /// Get IOCFPluginTypes
+    OSDictionary *properties;
+    ret = CopyProperties(&properties);
+    if (ret != KERN_SUCCESS) {
+        os_log(OS_LOG_DEFAULT, "PadConnect - Failed to copy properties");
+        OSSafeReleaseNULL(properties);
+        return;
+    }
+    OSObject *pluginTypes = properties->getObject("IOCFPlugInTypes");
+    
+    /// Create property dict for padHandler
+    const OSString *keys[] = {
+        OSString::withCString(kIOSerialDeviceType),
+        OSString::withCString("IOCFPlugInTypes"),
+        OSString::withCString("IOKitDebug"),
+    };
+    const OSObject *objects[] = {
+        OSNumber::withNumber((unsigned long long)1, 32),
+        pluginTypes,
+        OSNumber::withNumber((unsigned long long)65535, 32),
+    };
+    int count = sizeof(keys) / sizeof(keys[0]);
+    
+    OSDictionary *deviceProperties = OSDictionary::withObjects(objects, keys, count, count);
+    
+    /// Cleanup
+    /// Note: maybe we should use goto exit pattern
+    OSSafeReleaseNULL(properties);
+    
+    
+    /// Init Create and attach padHandler
+    /// I think for driverKit we need to use https://developer.apple.com/documentation/driverkit/ioservice/3325579-create
+    
+    success = padHandler->init();
+    success = padHandler->SetProperties(deviceProperties)
+    
+    if (success) {
+        
+        padHandler->attach(this);
+        padHandler->Start(this);
+        
+    } else {
+        
+        padHandler->release();
+        padHandler = NULL;
+    }
+    
+    exit:
+    /// Cleanup. Not sure what we are doing
+    OSSafeReleaseNULL(properties);
+    OSSafeReleaseNULL(deviceProperties);
 }
- */
 
-/// --- IOUserHIDDevice ---
-
-//bool gamepad_driver_user::handleStart(IOService *provider) {
-//
-//    /// vvv Code is from keyboard sample project Start() method. Probably doesn't make sense here.
-//    kern_return_t ret = KERN_SUCCESS;
-////    ret = Start(provider, SUPERDISPATCH);
-//    os_log(OS_LOG_DEFAULT, "Hello World");
-//
-//    return ret;
-//}
-//
-//OSDictionary *gamepad_driver_user::newDeviceDescription(void) {
-//    return OSDictionaryCreate();
-//}
-//OSData *gamepad_driver_user::newReportDescriptor(void) {
-//    uint8_t *bytes = NULL;
-//    return OSDataCreate(bytes, 0);
-//}
-
+void gamepad_driver_user::PadDisconnect(void) {
+    
+    if (padHandler != NULL) {
+        padHandler->terminate(kIOServiceRequired | kIOServiceSynchronous);
+        padHandler->release();
+        padHandler = NULL;
+    }
+}
