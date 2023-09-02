@@ -7,7 +7,7 @@
 	<key>CFBundleShortVersionString</key>
 	<string>1.0.0</string>
 	<key>CFBundleVersion</key>
-	<string>219</string>
+	<string>274</string>
 	<key>IOKitPersonalities</key>
 	<dict>
 		<key>wired_xbox_one</key>
@@ -16,6 +16,13 @@
 			<string>$(PRODUCT_BUNDLE_IDENTIFIER)</string>
 			<key>CFBundleIdentifierKernel</key>
 			<string>com.apple.kpi.iokit</string>
+			<key>ControllerClassClientProperties</key>
+			<dict>
+				<key>IOClass</key>
+				<string>AppleUserHIDDevice</string>
+				<key>IOUserClass</key>
+				<string>Xbox360ControllerClass</string>
+			</dict>
 			<key>IOClass</key>
 			<string>IOUserService</string>
 			<key>IOMatchCategory</key>

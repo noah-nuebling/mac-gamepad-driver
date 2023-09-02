@@ -26,31 +26,48 @@ namespace HID_360 {
 
 static gamepad_driver_user *GetOwner(IOService *us) {
     
+    os_log(OS_LOG_DEFAULT, "ControllerClass - GetOwner()");
+    
     IOService *provider = us->GetProvider();
 
     if (provider == NULL) {
+        os_log(OS_LOG_DEFAULT, "ControllerClass - GetOwner - failed");
         return NULL;
     }
+    os_log(OS_LOG_DEFAULT, "ControllerClass - GetOwner - success");
     return OSDynamicCast(gamepad_driver_user, provider);
 }
 
-static IOUSBHostDevice* GetOwnerProvider(const IOService *us)
-{
-    IOService *prov = us->GetProvider();
+static IOUSBHostDevice* GetOwnerProvider(const IOService *us) {
+    
+    os_log(OS_LOG_DEFAULT, "ControllerClass - GetOwnerProvider()");
+    
+    IOReturn ret;
+    
+    gamepad_driver_user *prov = OSDynamicCast(gamepad_driver_user, us->GetProvider());
 
     if (prov == NULL) {
+        os_log(OS_LOG_DEFAULT, "ControllerClass - GetOwnerProvider - Failed to get parent");
         return NULL;
     }
-    IOService *provprov = prov->GetProvider();
-    if (provprov == NULL) {
+    
+    IOUSBHostDevice *provprov;
+    ret = prov->CoolGetProvider(&provprov);
+    if (ret != kIOReturnSuccess || provprov == NULL) {
+        os_log(OS_LOG_DEFAULT, "ControllerClass - GetOwnerProvider - Failed to get grandparent");
         return NULL;
     }
-    return OSDynamicCast(IOUSBHostDevice, provprov);
+    os_log(OS_LOG_DEFAULT, "ControllerClass - GetOwnerProvider - success");
+    return provprov;
 }
 
 bool Xbox360ControllerClass::handleStart(IOService *provider) {
     
+    /// Log
+    os_log(OS_LOG_DEFAULT, "ControllerClass - handleStart()");
+    
     if (OSDynamicCast(gamepad_driver_user, provider) == NULL) {
+        os_log(OS_LOG_DEFAULT, "ControllerClass - handleStart - No provider found");
         return false;
     }
     
@@ -70,13 +87,20 @@ void Xbox360ControllerClass::setProperty(OSObject *key, OSObject *value) {
 
 kern_return_t Xbox360ControllerClass::setProperties(OSDictionary *properties) {
 
+    /// Log
+    os_log(OS_LOG_DEFAULT, "ControllerClass - setProperty()");
+    
     gamepad_driver_user *owner = GetOwner(this);
-    if (owner == NULL)
+    if (owner == NULL) {
         return kIOReturnUnsupported;
+    }
     return owner->SetProperties(properties);
 }
 
 OSData *Xbox360ControllerClass::newReportDescriptor(void) {
+    
+    /// Log
+    os_log(OS_LOG_DEFAULT, "ControllerClass - newReportDescriptor()");
     
     /// Returns the HID descriptor for this device
     
@@ -92,6 +116,8 @@ kern_return_t Xbox360ControllerClass::setReport(IOMemoryDescriptor *report, IOHI
     /// - Comment from 360Controller: Handles a message from the userspace IOHIDDeviceInterface122::setReport function
     /// - Why did the 360Controller author use those scopes inside the switch?? Kind of weird but leaving it there cause idk why they did that.
 
+    /// Log
+    os_log(OS_LOG_DEFAULT, "ControllerClass - setReport()");
     
     /// Map report memory into current process' address space
     /// Notes:
@@ -163,6 +189,9 @@ kern_return_t Xbox360ControllerClass::setReport(IOMemoryDescriptor *report, IOHI
 
 kern_return_t Xbox360ControllerClass::getReport(IOMemoryDescriptor *report, IOHIDReportType reportType, IOOptionBits options, uint32_t completionTimeout, OSAction *action) {
     
+    /// Log
+    os_log(OS_LOG_DEFAULT, "ControllerClass - getReport()");
+    
     /// Get report doesn't do anything yet ;)
     return kIOReturnUnsupported;
 }
@@ -172,6 +201,9 @@ kern_return_t Xbox360ControllerClass::handleReport(uint64_t             timestam
                                                    uint32_t             reportLength,
                                                    IOHIDReportType      reportType /*= kIOHIDReportTypeInput*/,
                                                    IOOptionBits         options /*= 0*/) {
+    
+    /// Log
+    os_log(OS_LOG_DEFAULT, "ControllerClass - handlerReport()");
     
     /// Declare reusable ret
     kern_return_t ret = KERN_SUCCESS;
@@ -215,8 +247,11 @@ kern_return_t Xbox360ControllerClass::handleReport(uint64_t             timestam
 
 
 OSString *Xbox360ControllerClass::copyDeviceString(uint8_t stringIndex, const char *fallback) {
-        
+    
     /// Helper method which returns the string for a specified index from the USB device's string list
+    
+    /// Log
+    os_log(OS_LOG_DEFAULT, "ControllerClass - copyDeviceString() - arg stringIndex: %d", stringIndex);
     
     /// Declare return
     IOReturn ret;
@@ -242,11 +277,14 @@ OSString *Xbox360ControllerClass::copyDeviceString(uint8_t stringIndex, const ch
         cStringLength = stringDescriptor->bLength;
     }
     
+    /// Create OSString
+    OSString *result = OSString::withCString(cString, cStringLength);
+    
     /// Free string descriptor
     IOFree((void *)stringDescriptor, sizeof(IOUSBStringDescriptor));
     
-    /// Create OSString
-    OSString *result = OSString::withCString(cString, cStringLength);
+    /// Log
+    os_log(OS_LOG_DEFAULT, "ControllerClass - copyDeviceString - result: %s", cString);
     
     /// Return
     return result;
@@ -273,8 +311,16 @@ OSNumber* Xbox360ControllerClass::newPrimaryUsagePageNumber() const
 
 OSDictionary *Xbox360ControllerClass::newDeviceDescription(void) {
     
+    /// Log
+    os_log(OS_LOG_DEFAULT, "ControllerClass - newDeviceDescriptionn()");
+    
     /// Get device descriptor
     const IOUSBDeviceDescriptor *deviceDescriptor = GetOwnerProvider(this)->CopyDeviceDescriptor();
+    if (deviceDescriptor == NULL) {
+        os_log(OS_LOG_DEFAULT, "ControllerClass - newDeviceDescription - Couldn't copy grandpa device descriptor");
+        return OSDictionary::withCapacity(0);
+    }
+    
     
     /// Wrap values from device descriptor in OSContainers,
     ///     So they can be stored in the result dict
@@ -324,6 +370,9 @@ OSDictionary *Xbox360ControllerClass::newDeviceDescription(void) {
     OSSafeReleaseNULL(product);
     OSSafeReleaseNULL(serialNumber);
 //    OSSafeReleaseNULL( );
+    
+    /// Log
+    os_log(OS_LOG_DEFAULT, "ControllerClass - newDeviceDescription - result has %d keys", result->getCount());
     
     /// Return result dict
     return result;

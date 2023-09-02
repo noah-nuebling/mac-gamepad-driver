@@ -11,6 +11,7 @@
 #include <Availability.h>
 #include <DriverKit/DriverKit.iig>
 #include <USBDriverKit/IOUSBHostPipe.iig>
+#include <USBDriverKit/IOUSBHostDevice.iig>
 
 class gamepad_driver_user: public IOService {
     
@@ -28,6 +29,9 @@ public:
     
     virtual void ReadComplete(OSAction *action, IOReturn status, uint32_t actualByteCount, uint64_t completionTimestamp) TYPE(IOUSBHostPipe::CompleteAsyncIO);
     virtual void WriteComplete(OSAction *action, IOReturn status, uint32_t actualByteCount, uint64_t completionTimestamp) TYPE(IOUSBHostPipe::CompleteAsyncIO);
+    
+    /// Other interface for client
+    virtual kern_return_t CoolGetProvider(IOUSBHostDevice **provider);
     
 private:
     /// Attach/detach IOHIDDevice client

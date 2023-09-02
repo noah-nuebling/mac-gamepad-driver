@@ -58,6 +58,7 @@ struct gamepad_driver_user_IVars {
     IODispatchQueue *queue;
     Controller::Type controller;
     Xbox360ControllerClass *padHandler;
+    IOUSBHostDevice *provider;
 };
 
 bool gamepad_driver_user::init() {
@@ -120,6 +121,10 @@ kern_return_t IMPL(gamepad_driver_user, Start) {
             os_log(OS_LOG_DEFAULT, "Start - Invalid provider");
             goto fail;
         }
+        
+        /// Store provider in ivar
+        /// Note: This is weird hack to make CoolGetProvider work
+        ivars->provider = device;
         
         /// Get configuration descriptor
         uint8_t index = 0;
@@ -354,6 +359,10 @@ kern_return_t IMPL(gamepad_driver_user, Start) {
             goto fail;
         }
         
+        /// Create and attach IOHIDDevice
+        /// Note: Moved this up in the control flow compared to 360Controller
+        PadConnect();
+        
         /// Begin polling input
         bool success = QueueRead();
         if (!success) {
@@ -386,9 +395,6 @@ kern_return_t IMPL(gamepad_driver_user, Start) {
             os_log(OS_LOG_DEFAULT, "Start - Fail due to unhandled Controller Type");
             goto fail;
         }
-        
-        /// Create and attach IOHIDDevice
-        PadConnect();
         
         /// Call super
         ret = Start(provider, SUPERDISPATCH);
@@ -613,11 +619,13 @@ void IMPL(gamepad_driver_user, ReadComplete) {
                 
                 if (isValidReport || isXboxOneReport) {
                     
-                    /// Dispatch to padHandler
-                    ret = ivars->padHandler->handleReport(inBuffer, kIOHIDReportTypeInput);
+                    os_log(OS_LOG_DEFAULT, "Read - Dispatching to padHandler");
+                    ret = ivars->padHandler->handleReport(completionTimestamp, ivars->inBuffer, actualByteCount, kIOHIDReportTypeInput, 0);
                     if (ret != kIOReturnSuccess) {
-                        IOLog("Read - failed to handle report. IOReturn: %.8x", ret);
+                        os_log(OS_LOG_DEFAULT, "Read - failed to handle report. IOReturn: %.8x", ret);
                     }
+                } else {
+                    os_log(OS_LOG_DEFAULT, "Read - Not sending report since it's not valid. isValidReport: %d, isXboxOneReport: %d, command: %d, size: %d", isValidReport, isXboxOneReport, report->header.command, report->header.size);
                 }
             }
             
@@ -625,10 +633,12 @@ void IMPL(gamepad_driver_user, ReadComplete) {
             os_log(OS_LOG_DEFAULT, "Read - kIOReturnNotResponding");
             doReadAgain = false;
         } else {
+            os_log(OS_LOG_DEFAULT, "Read - Unhandled status %d", status);
             doReadAgain = false;
         }
             
         /// Queue another read
+        os_log(OS_LOG_DEFAULT, "Read - Queueing another read");
         if (doReadAgain) QueueRead();
 //    });
 };
@@ -638,29 +648,29 @@ void IMPL(gamepad_driver_user, ReadComplete) {
 
 void gamepad_driver_user::PadConnect(void) {
     
+    
+    /// Log
+    os_log(OS_LOG_DEFAULT, "PadConnect - running");
+    
     bool success;
     IOReturn ret;
     
     PadDisconnect();
     
     Controller::Type controller = ivars->controller;
-    Xbox360ControllerClass *padHandler = NULL;
+    Xbox360ControllerClass *padHandlerClass = NULL;
     
-    if (controller == Controller::XboxOriginal) {
-//        padHandler = new XboxOriginalControllerClass;
-    } else if (controller == Controller::XboxOne) {
-        padHandler = new XboxOneControllerClass;
-    } else if (controller == Controller::XboxOnePretend360) {
-//        padHandler = new XboxOnePretend360Class;
-    } else if (controller == Controller::Xbox360Pretend360) {
-//        padHandler = new Xbox360Pretend360Class;
-    } else {
-        padHandler = new Xbox360ControllerClass;
-    }
-    
-    if (padHandler == NULL) {
-        return;
-    }
+//    if (controller == Controller::XboxOriginal) {
+////        padHandler = new XboxOriginalControllerClass;
+//    } else if (controller == Controller::XboxOne) {
+//        padHandlerClass = XboxOneControllerClass::GetClass();
+//    } else if (controller == Controller::XboxOnePretend360) {
+////        padHandler = new XboxOnePretend360Class;
+//    } else if (controller == Controller::Xbox360Pretend360) {
+////        padHandler = new Xbox360Pretend360Class;
+//    } else {
+//        padHandlerClass = Xbox360ControllerClass::GetClass();
+//    }
         
     /// Get IOCFPluginTypes
     OSDictionary *properties;
@@ -673,7 +683,7 @@ void gamepad_driver_user::PadConnect(void) {
     OSObject *pluginTypes = properties->getObject("IOCFPlugInTypes");
     
     /// Create property dict for padHandler
-    const OSString *keys[] = {
+    const OSObject *keys[] = {
         OSString::withCString(kIOSerialDeviceType),
         OSString::withCString("IOCFPlugInTypes"),
         OSString::withCString("IOKitDebug"),
@@ -694,32 +704,71 @@ void gamepad_driver_user::PadConnect(void) {
     
     /// Init Create and attach padHandler
     /// I think for driverKit we need to use https://developer.apple.com/documentation/driverkit/ioservice/3325579-create
+    /// See actual explanation here: https://stackoverflow.com/questions/61545594/how-should-newuserclient-be-implemented
     
-    success = padHandler->init();
-    success = padHandler->SetProperties(deviceProperties)
-    
-    if (success) {
-        
-        padHandler->attach(this);
-        padHandler->Start(this);
-        
-    } else {
-        
-        padHandler->release();
-        padHandler = NULL;
+    Xbox360ControllerClass *padHandler;
+    ret = this->Create(this, "ControllerClassClientProperties", (IOService **)&padHandler);
+    if (ret != kIOReturnSuccess || padHandler == NULL) {
+        os_log(OS_LOG_DEFAULT, "PadConnect - Creating the ControllerClass client service failed. IOReturn: %.8x", ret);
+        goto fail;
     }
     
-    exit:
-    /// Cleanup. Not sure what we are doing
+    ret = padHandler->setProperties(deviceProperties);
+    if (ret != kIOReturnSuccess) {
+        os_log(OS_LOG_DEFAULT, "PadConnect - Setting properties failed");
+        goto fail;
+    }
+        
+    /// Start padHandler
+    /// (Not sure if necessary)
+//    padHandler->Start(this);
+    
+    /// Store padHandler
+    ivars->padHandler = padHandler;
+    
+    /// Cleanup. (Not sure what we are doing)
     OSSafeReleaseNULL(properties);
     OSSafeReleaseNULL(deviceProperties);
+    
+    /// Return
+    return;
+
+    /// Cleanup after failure. Not sure what we are doing.
+    fail:
+    OSSafeReleaseNULL(properties);
+    OSSafeReleaseNULL(deviceProperties);
+    OSSafeReleaseNULL(padHandler);
 }
 
 void gamepad_driver_user::PadDisconnect(void) {
     
-    if (padHandler != NULL) {
-        padHandler->terminate(kIOServiceRequired | kIOServiceSynchronous);
-        padHandler->release();
-        padHandler = NULL;
+    if (ivars->padHandler != NULL) {
+        ivars->padHandler->Terminate(0 /*kIOServiceRequired | kIOServiceSynchronous*/);
+        ivars->padHandler->release();
+        ivars->padHandler = NULL;
     }
+}
+
+kern_return_t IMPL(gamepad_driver_user, CoolGetProvider) {
+    
+    os_log(OS_LOG_DEFAULT, "CoolGetProvider()");
+    
+    IOService *p = this->GetProvider();
+    IOUSBHostDevice *q = OSDynamicCast(IOUSBHostDevice, p);
+    
+    if (q == NULL) {
+        os_log(OS_LOG_DEFAULT, "CoolGetProvider - failed to get provider normally - attempting to get it from ivars");
+        q = ivars->provider;
+    }
+    
+    if (q == NULL) {
+        os_log(OS_LOG_DEFAULT, "CoolGetProvider - failed to get provider from ivars, too. Failure");
+        return kIOReturnError;
+    }
+    
+    
+    os_log(OS_LOG_DEFAULT, "CoolGetProvider - success");
+    *provider = q;
+    
+    return KERN_SUCCESS;
 }

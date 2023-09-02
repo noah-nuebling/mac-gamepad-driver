@@ -18,8 +18,6 @@ class Xbox360ControllerClass : public IOUserHIDDevice {
 
 public:
     
-    init
-    
 //    virtual bool start(IOService *provider) override; /* From 360Controller, In driverkit you override handleStart instead. */
     virtual bool handleStart(IOService *provider) override;
 
