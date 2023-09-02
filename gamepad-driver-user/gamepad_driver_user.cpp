@@ -226,7 +226,10 @@ kern_return_t IMPL(gamepad_driver_user, Start) {
         
         /// Open interface
         /// NOTE: Not totally sure about the params here
-        controllerInterface->Open(this, 0, NULL);
+        ret = controllerInterface->Open(this, 0, NULL);
+        if (ret != kIOReturnSuccess) {
+            os_log(OS_LOG_DEFAULT, "Start - Unable to open controller interface. IOReturn: %.8x", ret);
+        }
         
         /// Iterate over endpoints and create inPipe and outPipe
         
@@ -471,6 +474,7 @@ bool gamepad_driver_user::QueueWrite(const void *bytes, uint32_t length) {
         os_log(OS_LOG_DEFAULT, "Write - Failed to write. IOReturn %.8x", ret);
         return false;
     }
+    os_log(OS_LOG_DEFAULT, "Write - Successfully queued write.");
     
     /// Cleanup
     /// TODO: Do this on early return to prevent leaks
@@ -489,7 +493,7 @@ void IMPL(gamepad_driver_user, WriteComplete) {
         os_log(OS_LOG_DEFAULT, "Write - Error writing: %.8x\n", status);
     } else {
         /// Log
-        os_log(OS_LOG_DEFAULT, "Write - Wrote data");
+        os_log(OS_LOG_DEFAULT, "Write - Successfully wrote data");
     }
 }
 
@@ -498,7 +502,7 @@ void IMPL(gamepad_driver_user, WriteComplete) {
 bool gamepad_driver_user::QueueRead(void) {
     
     /// Log
-    os_log(OS_LOG_DEFAULT, "Read - Requesting input");
+    os_log(OS_LOG_DEFAULT, "Read - Queueing read");
     
     
     /// Declare return
@@ -539,7 +543,7 @@ bool gamepad_driver_user::QueueRead(void) {
     /// Schedule async read from device
     ret = ivars->inPipe->AsyncIO(ivars->inBuffer, (uint32_t)inBufferLength, completionHandler, timeoutMs);
     if (ret != kIOReturnSuccess) {
-        os_log(OS_LOG_DEFAULT, "Read - Failed to read. IOReturn %d, inBufferIsNull: %d, inBufferLength: %d, actionIsNull: %d, timeout: %d", ret, ivars->inBuffer == NULL, (uint32_t)inBufferLength, completionHandler == NULL, timeoutMs);
+        os_log(OS_LOG_DEFAULT, "Read - Failed to queue read. IOReturn %d, inBufferIsNull: %d, inBufferLength: %d, actionIsNull: %d, timeout: %d", ret, ivars->inBuffer == NULL, (uint32_t)inBufferLength, completionHandler == NULL, timeoutMs);
         return false;
     }
     
@@ -556,7 +560,7 @@ void IMPL(gamepad_driver_user, ReadComplete) {
     /// `void func(OSAction *action, IOReturn status, uint32_t actualByteCount, uint64_t completionTimestamp)`
     
     /// Log
-    os_log(OS_LOG_DEFAULT, "Read - Received data. Status %d bytecount: %d, timestamp: %llu", status, actualByteCount, completionTimestamp);
+    os_log(OS_LOG_DEFAULT, "Read - Read data. Status %d bytecount: %d, timestamp: %llu", status, actualByteCount, completionTimestamp);
     
     /// Guard padHandler exists
     /// Notes:
@@ -570,7 +574,7 @@ void IMPL(gamepad_driver_user, ReadComplete) {
     /// Enqueue workload
     /// Note: This logic is copied from 360Controller (although it is implemented with locks there). I don't know if it's necessary here
     
-//    ivars->queue->DispatchSync(^{
+    ivars->queue->DispatchSync(^{
         
         /// Declare return var
         IOReturn ret = kIOReturnSuccess;
@@ -625,7 +629,7 @@ void IMPL(gamepad_driver_user, ReadComplete) {
                         os_log(OS_LOG_DEFAULT, "Read - failed to handle report. IOReturn: %.8x", ret);
                     }
                 } else {
-                    os_log(OS_LOG_DEFAULT, "Read - Not sending report since it's not valid. isValidReport: %d, isXboxOneReport: %d, command: %d, size: %d", isValidReport, isXboxOneReport, report->header.command, report->header.size);
+                    os_log(OS_LOG_DEFAULT, "Read - Not sending report since it's not valid. isValidReport: %d, isXboxOneReport: %d, command: %d, size: %d, 360Size: %lu", isValidReport, isXboxOneReport, report->header.command, report->header.size, sizeof(XBOX360_IN_REPORT));
                 }
             }
             
@@ -640,7 +644,7 @@ void IMPL(gamepad_driver_user, ReadComplete) {
         /// Queue another read
         os_log(OS_LOG_DEFAULT, "Read - Queueing another read");
         if (doReadAgain) QueueRead();
-//    });
+    });
 };
 
 
