@@ -335,6 +335,7 @@ kern_return_t IMPL(gamepad_driver_user, Start) {
         /// Notes:
         /// - We're passing 1 for the alignment param. The docs say 0 is the default, but the corresponding method which 360Controller uses (IOBufferMemoryDescriptor::inTaskWithOptions) has 1 as the default value. This is confusing. Not sure whether to pass 0 or 1.
         /// - The 0 or 1 question is also important for the endpoint buffer!
+        /// - Edit: Tried to change alignment to 0, but the 'invalidReport' issues still happen for my XboxOne controller, so changed back to 1.
         ivars->inBuffer = NULL;
         ret = IOBufferMemoryDescriptor::Create(kIOMemoryDirectionIn, inMaxPacketSize, 1, &ivars->inBuffer);
         if (ret != kIOReturnSuccess) {
